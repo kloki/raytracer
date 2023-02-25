@@ -6,6 +6,7 @@ pub struct Color {
 }
 
 impl Color {
+    #[allow(dead_code)]
     pub fn new(red: u8, green: u8, blue: u8) -> Self {
         Color { red, green, blue }
     }
