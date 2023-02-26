@@ -1,6 +1,7 @@
 use indicatif::ProgressBar;
 use window::Window;
 mod color;
+mod point;
 mod window;
 fn main() {
     let mut screen = Window::new(256, 256);
