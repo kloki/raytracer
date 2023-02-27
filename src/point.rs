@@ -11,6 +11,21 @@ impl Point {
         Point { x, y, z }
     }
 
+    pub fn red() -> Self {
+        Point {
+            x: 1.,
+            y: 0.,
+            z: 0.,
+        }
+    }
+    pub fn green() -> Self {
+        Point {
+            x: 0.,
+            y: 1.,
+            z: 0.,
+        }
+    }
+
     pub fn dot(&self, other: Point) -> f64 {
         self.x * other.x + self.y * other.y + self.z * other.z
     }

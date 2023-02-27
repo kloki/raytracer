@@ -1,25 +1,23 @@
+use body::{Body, Sphere};
+use point::Point;
 use raytracer::Tracer;
+mod body;
 mod color;
 mod point;
 mod raytracer;
 mod window;
 fn main() {
-    let mut tracer = Tracer::new(400, 255, 2., 1.25, 1.);
-    // let mut screen = Window::new(256, 256);
+    // let bodies: Vec<Box<dyn Body>> = vec![
+    //     Box::new(Sphere::new(Point::new(0., 0., -2.), 0.5, Point::red())),
+    //     Box::new(Sphere::new(Point::new(1.2, 0.5, -3.), 0.9, Point::green())),
+    // ];
 
-    // let bar = ProgressBar::new((screen.width * screen.height).try_into().unwrap());
-
-    // for y in 0..255 {
-    //     for x in 0..255 {
-    //         screen.pixels[y][x].set_color(
-    //             x.try_into().unwrap(),
-    //             (255 - y).try_into().unwrap(),
-    //             100,
-    //         );
-    //         bar.inc(1);
-    //     }
-    // }
-    // bar.finish();
+    let bodies: Vec<Box<dyn Body>> = vec![Box::new(Sphere::new(
+        Point::new(0., 0., -1.),
+        0.5,
+        Point::red(),
+    ))];
+    let mut tracer = Tracer::new(400, 255, 2., 1.25, 1., bodies);
     tracer.render();
     println!("{}", tracer.image());
 }
