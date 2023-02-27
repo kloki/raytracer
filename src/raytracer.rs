@@ -64,8 +64,8 @@ impl Tracer {
 
     pub fn render(&mut self) {
         let bar = ProgressBar::new((self.width * self.height).try_into().unwrap());
-        for j in 0..(self.height - 1) {
-            for i in 0..(self.width - 1) {
+        for j in 0..self.height {
+            for i in 0..self.width {
                 bar.inc(1);
                 let u = i as f64 / (self.width - 1) as f64;
                 let v = j as f64 / (self.height - 1) as f64;
