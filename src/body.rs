@@ -29,13 +29,13 @@ impl Body for Sphere {
     fn hit(&self, ray: &Ray) -> Option<f64> {
         let oc = ray.origin - self.center;
         let a = ray.direction.dot(ray.direction);
-        let b = 2. * oc.dot(ray.direction);
-        let c = oc.dot(oc) - self.radius * self.radius;
-        let discriminant = b * b - 4. * a * c;
+        let half_b = oc.dot(ray.direction);
+        let c = oc.length_squared() - self.radius * self.radius;
+        let discriminant = half_b * half_b - a * c;
         if discriminant < 0. {
             return None;
         }
-        Some((-b - discriminant.sqrt()) / (2.0 * a))
+        Some((-half_b - discriminant.sqrt()) / a)
     }
 
     fn color(&self, ray: &Ray, angle: f64) -> Point {

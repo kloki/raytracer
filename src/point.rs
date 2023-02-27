@@ -36,8 +36,15 @@ impl Point {
             z: self.x * other.y - self.y * other.x,
         }
     }
+    pub fn length_squared(&self) -> f64 {
+        self.x * self.x + self.y * self.y + self.z * self.z
+    }
+    pub fn length(&self) -> f64 {
+        self.length_squared().sqrt()
+    }
+
     pub fn unit_vector(self) -> Point {
-        self / 3.
+        self / self.length()
     }
 }
 
