@@ -1,16 +1,17 @@
 use std::ops;
+#[derive(Debug, Clone, Copy)]
 pub struct Point {
-    x: isize,
-    y: isize,
-    z: isize,
+    x: f64,
+    y: f64,
+    z: f64,
 }
 
 impl Point {
-    pub fn new(x: isize, y: isize, z: isize) -> Self {
+    pub fn new(x: f64, y: f64, z: f64) -> Self {
         Point { x, y, z }
     }
 
-    pub fn dot(&self, other: Point) -> isize {
+    pub fn dot(&self, other: Point) -> f64 {
         self.x * other.x + self.y * other.y + self.z * other.z
     }
     pub fn cross(&self, other: Point) -> Point {
@@ -58,10 +59,10 @@ impl ops::Sub<Point> for Point {
     }
 }
 
-impl ops::Mul<isize> for Point {
+impl ops::Mul<f64> for Point {
     type Output = Point;
 
-    fn mul(self, other: isize) -> Point {
+    fn mul(self, other: f64) -> Point {
         Point {
             x: self.x * other,
             y: self.y * other,
@@ -69,7 +70,7 @@ impl ops::Mul<isize> for Point {
         }
     }
 }
-impl ops::Mul<Point> for isize {
+impl ops::Mul<Point> for f64 {
     type Output = Point;
 
     fn mul(self, other: Point) -> Point {
@@ -77,10 +78,10 @@ impl ops::Mul<Point> for isize {
     }
 }
 
-impl ops::Div<isize> for Point {
+impl ops::Div<f64> for Point {
     type Output = Point;
 
-    fn div(self, other: isize) -> Point {
+    fn div(self, other: f64) -> Point {
         Point {
             x: self.x / other,
             y: self.y / other,
@@ -94,16 +95,16 @@ mod test {
 
     #[test]
     fn test_additon() {
-        let sum = Point::new(1, 2, 3) + Point::new(3, 2, 1);
-        assert_eq!(sum.x, 4);
-        assert_eq!(sum.y, 4);
-        assert_eq!(sum.z, 4);
+        let sum = Point::new(1., 2., 3.) + Point::new(3., 2., 1.);
+        assert_eq!(sum.x, 4.);
+        assert_eq!(sum.y, 4.);
+        assert_eq!(sum.z, 4.);
     }
     #[test]
     fn test_scalar_multiplication() {
-        let scaled = Point::new(1, 2, 3) * 3;
-        assert_eq!(scaled.x, 3);
-        assert_eq!(scaled.y, 6);
-        assert_eq!(scaled.z, 9);
+        let scaled = Point::new(1., 2., 3.) * 3.;
+        assert_eq!(scaled.x, 3.);
+        assert_eq!(scaled.y, 6.);
+        assert_eq!(scaled.z, 9.);
     }
 }
