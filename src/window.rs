@@ -16,7 +16,7 @@ impl Window {
     }
     pub fn to_ppm(&self) -> String {
         let mut output = format!("P3\n{} {}\n255\n", self.width, self.height).to_owned();
-        for row in self.pixels.iter() {
+        for row in self.pixels.iter().rev() {
             for pixel in row {
                 output.push_str(&pixel.to_ppm());
                 output.push_str(" ");

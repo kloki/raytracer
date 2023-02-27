@@ -1,3 +1,4 @@
+use crate::point::Point;
 #[derive(Clone, Debug)]
 pub struct Color {
     red: u8,
@@ -17,11 +18,12 @@ impl Color {
             blue: 0,
         }
     }
-    pub fn set_color(&mut self, red: u8, green: u8, blue: u8) {
-        self.red = red;
-        self.green = green;
-        self.blue = blue;
+    pub fn set_color(&mut self, point: Point) {
+        self.red = (255. * point.x) as u8;
+        self.green = (255. * point.y) as u8;
+        self.blue = (255. * point.z) as u8;
     }
+
     pub fn to_ppm(&self) -> String {
         format!("{:3} {:3} {:3}", self.red, self.green, self.blue)
     }

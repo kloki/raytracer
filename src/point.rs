@@ -1,9 +1,9 @@
 use std::ops;
 #[derive(Debug, Clone, Copy)]
 pub struct Point {
-    x: f64,
-    y: f64,
-    z: f64,
+    pub x: f64,
+    pub y: f64,
+    pub z: f64,
 }
 
 impl Point {
@@ -20,6 +20,9 @@ impl Point {
             y: self.z * other.x - self.x * other.z,
             z: self.x * other.y - self.y * other.x,
         }
+    }
+    pub fn unit_vector(self) -> Point {
+        self / 3.
     }
 }
 
