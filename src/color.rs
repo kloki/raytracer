@@ -15,11 +15,12 @@ impl Color {
         }
     }
     pub fn transform_to_color(&self, value: f64, samples: usize) -> u8 {
-        match value / samples as f64 {
-            v if v < 0. => 0,
-            v if v > 0.999 => 255,
-            v => (256. * v) as u8,
-        }
+        let v = match (value / samples as f64).sqrt() {
+            v if v < 0. => 0.,
+            v if v > 0.999 => 0.999,
+            v => v,
+        };
+        (v * 256.) as u8
     }
     pub fn set_color(&mut self, point: Point, samples: usize) {
         self.red = self.transform_to_color(point.x, samples);

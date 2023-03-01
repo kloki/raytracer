@@ -8,6 +8,13 @@ pub struct Ray {
     pub direction: Point,
 }
 
+#[allow(dead_code)]
+pub enum Diffusion {
+    Random,
+    Lambertian,
+    Alternative,
+}
+
 impl Ray {
     pub fn new(origin: Point, direction: Point) -> Self {
         Ray { origin, direction }
@@ -55,6 +62,8 @@ pub struct Tracer {
     camera: Camera,
     world: World,
     samples_per_pixel: usize,
+    max_depth: usize,
+    diffusion: Diffusion,
 }
 
 impl Tracer {
@@ -64,6 +73,8 @@ impl Tracer {
         focal_length: f64,
         world: World,
         samples_per_pixel: usize,
+        max_depth: usize,
+        diffusion: Diffusion,
     ) -> Self {
         let screen = Window::new(width, height);
         let camera = Camera::new(2. * (width as f64 / height as f64), 2., focal_length);
@@ -74,11 +85,24 @@ impl Tracer {
             camera,
             world,
             samples_per_pixel,
+            max_depth,
+            diffusion,
         }
     }
-    pub fn ray_color(&self, ray: Ray) -> Point {
-        if let Some(record) = self.world.hit(&ray, 0., f64::INFINITY) {
-            return 0.5 * (record.normal + Point::new(1., 1., 1.));
+    pub fn ray_color(&self, ray: Ray, depth: usize) -> Point {
+        if depth <= 0 {
+            return Point::default();
+        }
+
+        if let Some(record) = self.world.hit(&ray, 0.001, f64::INFINITY) {
+            let target = match self.diffusion {
+                Diffusion::Random => record.p + record.normal + Point::random_in_unit_sphere(),
+                Diffusion::Lambertian => record.p + record.normal + Point::random_unit_vector(),
+                Diffusion::Alternative => {
+                    record.p + record.normal + Point::random_in_hemisphere(record.normal)
+                }
+            };
+            return 0.5 * self.ray_color(Ray::new(record.p, target - record.p), depth - 1);
         }
         //background
         let unit_d = ray.direction;
@@ -98,7 +122,7 @@ impl Tracer {
                     let u = (i as f64 + rng.gen::<f64>()) / (self.width - 1) as f64;
                     let v = (j as f64 + rng.gen::<f64>()) / (self.height - 1) as f64;
                     let ray = self.camera.new_ray(u, v);
-                    color = color + self.ray_color(ray);
+                    color = color + self.ray_color(ray, self.max_depth);
                 }
 
                 self.screen.pixels[j][i].set_color(color, self.samples_per_pixel);

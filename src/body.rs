@@ -37,16 +37,11 @@ pub trait Body {
 pub struct Sphere {
     center: Point,
     radius: f64,
-    color: Point,
 }
 
 impl Sphere {
-    pub fn new(center: Point, radius: f64, color: Point) -> Self {
-        Sphere {
-            center,
-            radius,
-            color,
-        }
+    pub fn new(center: Point, radius: f64) -> Self {
+        Sphere { center, radius }
     }
 }
 
@@ -73,8 +68,8 @@ impl Body for Sphere {
     }
 
     fn color(&self, ray: &Ray, angle: f64) -> Point {
-        let N = (ray.at(angle) - Point::new(0., 0., -1.)).unit_vector();
-        0.5 * Point::new(N.x + 1., N.y + 1., N.z + 1.)
+        let n = (ray.at(angle) - Point::new(0., 0., -1.)).unit_vector();
+        0.5 * Point::new(n.x + 1., n.y + 1., n.z + 1.)
     }
 }
 

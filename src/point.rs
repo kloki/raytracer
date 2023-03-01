@@ -1,3 +1,4 @@
+use rand::Rng;
 use std::ops;
 #[derive(Debug, Clone, Copy)]
 pub struct Point {
@@ -15,6 +16,31 @@ impl Point {
             x: 0.,
             y: 0.,
             z: 0.,
+        }
+    }
+
+    pub fn random_in_unit_sphere() -> Self {
+        let mut rng = rand::thread_rng();
+        loop {
+            let p = Point {
+                x: rng.gen_range(0f64..2.) - 1.,
+                y: rng.gen_range(0f64..2.) - 1.,
+                z: rng.gen_range(0f64..2.) - 1.,
+            };
+            if p.length_squared() >= 1. {
+                return p;
+            }
+        }
+    }
+    pub fn random_unit_vector() -> Self {
+        Self::random_in_unit_sphere().unit_vector()
+    }
+    pub fn random_in_hemisphere(normal: Point) -> Self {
+        let in_unit = Self::random_in_unit_sphere();
+        if in_unit.dot(normal) > 0. {
+            return in_unit;
+        } else {
+            return in_unit;
         }
     }
 
