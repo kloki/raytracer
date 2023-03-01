@@ -10,6 +10,13 @@ impl Point {
     pub fn new(x: f64, y: f64, z: f64) -> Self {
         Point { x, y, z }
     }
+    pub fn default() -> Self {
+        Point {
+            x: 0.,
+            y: 0.,
+            z: 0.,
+        }
+    }
 
     pub fn red() -> Self {
         Point {
@@ -56,6 +63,18 @@ impl ops::Add<Point> for Point {
             x: self.x + other.x,
             y: self.y + other.y,
             z: self.z + other.z,
+        }
+    }
+}
+
+impl ops::Neg for Point {
+    type Output = Point;
+
+    fn neg(self) -> Point {
+        Point {
+            x: -self.x,
+            y: -self.y,
+            z: -self.z,
         }
     }
 }

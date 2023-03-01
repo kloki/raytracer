@@ -1,4 +1,4 @@
-use crate::body::Body;
+use crate::body::World;
 use crate::point::Point;
 use crate::window::Window;
 use indicatif::ProgressBar;
@@ -25,7 +25,7 @@ pub struct Tracer {
     horizontal: Point,
     vertical: Point,
     lower_left_corner: Point,
-    bodies: Vec<Box<dyn Body>>,
+    world: World,
 }
 
 impl Tracer {
@@ -35,7 +35,7 @@ impl Tracer {
         vp_width: f64,
         vp_height: f64,
         focal_length: f64,
-        bodies: Vec<Box<dyn Body>>,
+        world: World,
     ) -> Self {
         let screen = Window::new(width, height);
         let origin = Point::new(0., 0., 0.);
@@ -51,14 +51,12 @@ impl Tracer {
             horizontal,
             vertical,
             lower_left_corner,
-            bodies,
+            world,
         }
     }
     pub fn ray_color(&self, ray: Ray) -> Point {
-        for body in &self.bodies {
-            if let Some(angle) = body.hit(&ray) {
-                return body.color(&ray, angle);
-            }
+        if let Some(record) = self.world.hit(&ray, 0., f64::INFINITY) {
+            return 0.5 * (record.normal + Point::new(1., 1., 1.));
         }
         //background
         let unit_d = ray.direction;
