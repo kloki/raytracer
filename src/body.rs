@@ -26,7 +26,7 @@ impl HitRecord {
 }
 
 pub trait Body {
-    fn hit(&self, _ray: &Ray, t_min: f64, t_max: f64, rec: &mut HitRecord) -> bool {
+    fn hit(&self, _ray: &Ray, _t_min: f64, _t_max: f64, _rec: &mut HitRecord) -> bool {
         false
     }
     fn color(&self, _ray: &Ray, _angle: f64) -> Point {

@@ -7,10 +7,6 @@ pub struct Color {
 }
 
 impl Color {
-    #[allow(dead_code)]
-    pub fn new(red: u8, green: u8, blue: u8) -> Self {
-        Color { red, green, blue }
-    }
     pub fn default() -> Self {
         Color {
             red: 0,
@@ -18,10 +14,17 @@ impl Color {
             blue: 0,
         }
     }
-    pub fn set_color(&mut self, point: Point) {
-        self.red = (255. * point.x) as u8;
-        self.green = (255. * point.y) as u8;
-        self.blue = (255. * point.z) as u8;
+    pub fn transform_to_color(&self, value: f64, samples: usize) -> u8 {
+        match value / samples as f64 {
+            v if v < 0. => 0,
+            v if v > 0.999 => 255,
+            v => (256. * v) as u8,
+        }
+    }
+    pub fn set_color(&mut self, point: Point, samples: usize) {
+        self.red = self.transform_to_color(point.x, samples);
+        self.green = self.transform_to_color(point.y, samples);
+        self.blue = self.transform_to_color(point.z, samples);
     }
 
     pub fn to_ppm(&self) -> String {
