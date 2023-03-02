@@ -1,7 +1,7 @@
 use crate::body::World;
 use crate::point::Point;
 use crate::window::Window;
-use indicatif::ProgressBar;
+use indicatif::{ProgressBar, ProgressStyle};
 use rand::Rng;
 pub struct Ray {
     pub origin: Point,
@@ -114,6 +114,14 @@ impl Tracer {
         let mut rng = rand::thread_rng();
 
         let bar = ProgressBar::new((self.width * self.height).try_into().unwrap());
+        bar.set_style(
+            ProgressStyle::with_template(
+                "{spinner}[{elapsed_precise}] {bar:40.cyan/blue}{percent}% {msg}",
+            )
+            .unwrap()
+            .progress_chars("█ ")
+            .tick_strings(&vec!["🙈 🙉 🙊 ", "🙉 🙊 🙈 ", "🙊 🙈 🙉 "]),
+        );
         for j in 0..self.height {
             for i in 0..self.width {
                 bar.inc(1);
