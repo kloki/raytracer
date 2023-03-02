@@ -11,7 +11,8 @@ pub fn three_balls() -> World {
     world.add(Box::new(Sphere::new(
         Point::new(0., 0., -1.),
         0.5,
-        BodyProps::matte(Point::new(0.1, 0.2, 0.5)),
+        // BodyProps::matte(Point::new(0.1, 0.2, 0.5)),
+        BodyProps::glass(1.5),
     )));
     world.add(Box::new(Sphere::new(
         Point::new(-1., 0., -1.),
