@@ -174,7 +174,7 @@ impl BodyProps {
     pub fn reflectance(cosine: f64, ref_idx: f64) -> f64 {
         let mut r0 = (1. - ref_idx) / (1. + ref_idx);
         r0 = r0 * r0;
-        r0 + (1. - r0) * (1. - cosine).powf(5.)
+        r0 + (1. - r0) * (1. - cosine).powi(5)
     }
     pub fn scatter(&self, ray_in: &Ray, rec: &HitRecord) -> Option<(Point, Ray)> {
         match self.material {

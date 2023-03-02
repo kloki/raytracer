@@ -67,10 +67,10 @@ impl Point {
     pub fn reflect(&self, surface: Point) -> Point {
         *self - 2. * self.dot(surface) * surface
     }
-    pub fn refract(&self, surface: Point, rerfaction_index: f64) -> Point {
-        let cos_theta = (-(*self)).dot(surface).min(1.);
-        let r_out_perp = rerfaction_index * (*self + cos_theta * surface);
-        let r_out_parallel = (-(1. - r_out_perp.length_squared()).abs().sqrt()) * surface;
+    pub fn refract(&self, n: Point, etai_over_etat: f64) -> Point {
+        let cos_theta = (-*self).dot(n);
+        let r_out_perp = (*self + (n * cos_theta)) * etai_over_etat;
+        let r_out_parallel = n * -(((1.0 - r_out_perp.length_squared()).abs()).sqrt());
         r_out_perp + r_out_parallel
     }
     pub fn dot(&self, other: Point) -> f64 {
