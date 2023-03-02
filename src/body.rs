@@ -4,6 +4,7 @@ use crate::raytracer::Ray;
 pub struct HitRecord {
     pub p: Point,
     pub normal: Point,
+    pub body_props: BodyProps,
     pub t: f64,
 }
 
@@ -12,6 +13,7 @@ impl HitRecord {
         HitRecord {
             p: Point::default(),
             normal: Point::default(),
+            body_props: BodyProps::null(),
             t: 0.,
         }
     }
@@ -37,11 +39,16 @@ pub trait Body {
 pub struct Sphere {
     center: Point,
     radius: f64,
+    body_props: BodyProps,
 }
 
 impl Sphere {
-    pub fn new(center: Point, radius: f64) -> Self {
-        Sphere { center, radius }
+    pub fn new(center: Point, radius: f64, body_props: BodyProps) -> Self {
+        Sphere {
+            center,
+            radius,
+            body_props,
+        }
     }
 }
 
@@ -64,6 +71,7 @@ impl Body for Sphere {
         rec.t = root;
         rec.p = ray.at(rec.t);
         rec.set_face_normal(ray, (rec.p - self.center) / self.radius);
+        rec.body_props = self.body_props;
         true
     }
 
@@ -99,5 +107,48 @@ impl World {
             return None;
         }
         Some(rec)
+    }
+}
+
+#[derive(Debug, Clone, Copy)]
+pub enum Material {
+    Lambertian,
+    Metal,
+    Ether,
+}
+
+#[derive(Debug, Clone, Copy)]
+pub struct BodyProps {
+    color: Point,
+    material: Material,
+}
+
+impl BodyProps {
+    pub fn new(color: Point, material: Material) -> Self {
+        BodyProps { color, material }
+    }
+    pub fn null() -> Self {
+        BodyProps {
+            color: Point::default(),
+            material: Material::Ether,
+        }
+    }
+    pub fn scatter(&self, ray_in: &Ray, rec: &HitRecord) -> Option<(Point, Ray)> {
+        match self.material {
+            Material::Ether => None,
+            Material::Lambertian => {
+                let mut scatter_direction = rec.normal + Point::random_unit_vector();
+                if scatter_direction.near_zero() {
+                    scatter_direction = rec.normal;
+                }
+                let scattered = Ray::new(rec.p, scatter_direction);
+                Some((self.color, scattered))
+            }
+            Material::Metal => {
+                let reflected = ray_in.direction.unit_vector().reflect(rec.normal);
+                let scattered = Ray::new(rec.p, reflected);
+                Some((self.color, scattered))
+            }
+        }
     }
 }

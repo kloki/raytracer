@@ -8,13 +8,6 @@ pub struct Ray {
     pub direction: Point,
 }
 
-#[allow(dead_code)]
-pub enum Diffusion {
-    Random,
-    Lambertian,
-    Alternative,
-}
-
 impl Ray {
     pub fn new(origin: Point, direction: Point) -> Self {
         Ray { origin, direction }
@@ -63,7 +56,6 @@ pub struct Tracer {
     world: World,
     samples_per_pixel: usize,
     max_depth: usize,
-    diffusion: Diffusion,
 }
 
 impl Tracer {
@@ -74,7 +66,6 @@ impl Tracer {
         world: World,
         samples_per_pixel: usize,
         max_depth: usize,
-        diffusion: Diffusion,
     ) -> Self {
         let screen = Window::new(width, height);
         let camera = Camera::new(2. * (width as f64 / height as f64), 2., focal_length);
@@ -86,7 +77,6 @@ impl Tracer {
             world,
             samples_per_pixel,
             max_depth,
-            diffusion,
         }
     }
     pub fn ray_color(&self, ray: Ray, depth: usize) -> Point {
@@ -95,14 +85,12 @@ impl Tracer {
         }
 
         if let Some(record) = self.world.hit(&ray, 0.001, f64::INFINITY) {
-            let target = match self.diffusion {
-                Diffusion::Random => record.p + record.normal + Point::random_in_unit_sphere(),
-                Diffusion::Lambertian => record.p + record.normal + Point::random_unit_vector(),
-                Diffusion::Alternative => {
-                    record.p + record.normal + Point::random_in_hemisphere(record.normal)
+            match record.body_props.scatter(&ray, &record) {
+                None => return Point::default(),
+                Some((attenuation, scattered)) => {
+                    return attenuation * self.ray_color(scattered, depth - 1)
                 }
-            };
-            return 0.5 * self.ray_color(Ray::new(record.p, target - record.p), depth - 1);
+            }
         }
         //background
         let unit_d = ray.direction;

@@ -59,6 +59,14 @@ impl Point {
         }
     }
 
+    pub fn near_zero(&self) -> bool {
+        let s = 0.000000001;
+        self.x.abs() < s && self.y.abs() < s && self.z.abs() < s
+    }
+
+    pub fn reflect(&self, surface: Point) -> Point {
+        *self - 2. * self.dot(surface) * surface
+    }
     pub fn dot(&self, other: Point) -> f64 {
         self.x * other.x + self.y * other.y + self.z * other.z
     }
