@@ -196,13 +196,16 @@ impl BodyProps {
                 Some((self.color, scattered))
             }
             Material::Dielectric => {
-                let refraction_ratio = match rec.front_face {
-                    true => 1. / self.index_refraction,
-                    false => self.index_refraction,
+                let refraction_ratio = if rec.front_face {
+                    1.0 / self.index_refraction
+                } else {
+                    self.index_refraction
                 };
+
                 let unit_direction = ray_in.direction.unit_vector();
-                let cos_theta = (-unit_direction).dot(rec.normal).min(1.0);
-                let sin_theta = (1. - (cos_theta * cos_theta)).sqrt();
+
+                let cos_theta = -unit_direction.dot(rec.normal).min(1.0);
+                let sin_theta = (1. - cos_theta * cos_theta).sqrt();
                 let directed: Point;
                 let cannot_refract = (refraction_ratio * sin_theta) > 1.;
                 let schlick_approximation =
