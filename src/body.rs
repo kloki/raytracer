@@ -136,7 +136,7 @@ impl BodyProps {
         BodyProps {
             color: Point::default(),
             material: Material::Ether,
-            fuzziness: 1,
+            fuzziness: 1.,
         }
     }
     pub fn scatter(&self, ray_in: &Ray, rec: &HitRecord) -> Option<(Point, Ray)> {
