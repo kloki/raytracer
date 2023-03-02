@@ -64,8 +64,8 @@ impl Point {
         self.x.abs() < s && self.y.abs() < s && self.z.abs() < s
     }
 
-    pub fn reflect(&self, surface: Point) -> Point {
-        *self - 2. * self.dot(surface) * surface
+    pub fn reflect(&self, n: Point) -> Point {
+        *self - n * self.dot(n) * 2.
     }
     pub fn refract(&self, n: Point, etai_over_etat: f64) -> Point {
         let cos_theta = (-*self).dot(n);
