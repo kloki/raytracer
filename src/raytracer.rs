@@ -116,10 +116,10 @@ impl Tracer {
         let bar = ProgressBar::new((self.width * self.height).try_into().unwrap());
         bar.set_style(
             ProgressStyle::with_template(
-                "{spinner}[{elapsed_precise}] {bar:40.cyan/blue}{percent}% {msg}",
+                "[{elapsed_precise:.cyan}] {spinner}{bar:40.cyan/blue} {msg}",
             )
             .unwrap()
-            .progress_chars("█ ")
+            .progress_chars("▰▰▱")
             .tick_strings(&vec!["🙈 🙉 🙊 ", "🙉 🙊 🙈 ", "🙊 🙈 🙉 "]),
         );
         for j in 0..self.height {
