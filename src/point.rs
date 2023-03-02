@@ -60,12 +60,18 @@ impl Point {
     }
 
     pub fn near_zero(&self) -> bool {
-        let s = 0.000000001;
+        let s = 0.0000000000001;
         self.x.abs() < s && self.y.abs() < s && self.z.abs() < s
     }
 
     pub fn reflect(&self, surface: Point) -> Point {
         *self - 2. * self.dot(surface) * surface
+    }
+    pub fn refract(&self, surface: Point, rerfaction_index: f64) -> Point {
+        let cos_theta = (-(*self)).dot(surface).min(1.);
+        let r_out_perp = rerfaction_index * (*self + cos_theta * surface);
+        let r_out_parallel = (-(1. - r_out_perp.length_squared()).abs().sqrt()) * surface;
+        r_out_perp + r_out_parallel
     }
     pub fn dot(&self, other: Point) -> f64 {
         self.x * other.x + self.y * other.y + self.z * other.z
