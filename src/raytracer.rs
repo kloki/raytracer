@@ -98,9 +98,7 @@ impl Tracer {
         return (1. - t) * Point::new(1., 1., 1.) + t * Point::new(0.5, 0.7, 1.0);
     }
 
-    pub fn render(&mut self) {
-        let mut rng = rand::thread_rng();
-
+    pub fn progress_bar(&self) -> ProgressBar {
         let bar = ProgressBar::new((self.width * self.height).try_into().unwrap());
         bar.set_style(
             ProgressStyle::with_template(
@@ -110,6 +108,13 @@ impl Tracer {
             .progress_chars("▰▰▱")
             .tick_strings(&vec!["🙈 🙉 🙊 ", "🙉 🙊 🙈 ", "🙊 🙈 🙉 "]),
         );
+        bar
+    }
+    pub fn render(&mut self) {
+        let mut rng = rand::thread_rng();
+
+        let bar = self.progress_bar();
+
         for j in 0..self.height {
             for i in 0..self.width {
                 bar.inc(1);
