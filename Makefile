@@ -1,6 +1,6 @@
 default:
 	cargo build --release
-	./target/release/raytracer > output.ppm
+	./target/release/raytracer
 	display output.ppm
 
 
