@@ -5,6 +5,7 @@ pub struct HitRecord {
     pub p: Point,
     pub normal: Point,
     pub body_props: BodyProps,
+    pub front_face: bool,
     pub t: f64,
 }
 
@@ -14,14 +15,15 @@ impl HitRecord {
             p: Point::default(),
             normal: Point::default(),
             body_props: BodyProps::null(),
+            front_face: true,
             t: 0.,
         }
     }
 
     pub fn set_face_normal(&mut self, ray: &Ray, outward_normal: Point) {
-        let front_face = ray.direction.dot(outward_normal) < 0.;
+        self.front_face = ray.direction.dot(outward_normal) < 0.;
         self.normal = outward_normal;
-        if !front_face {
+        if !self.front_face {
             self.normal = -outward_normal;
         }
     }
