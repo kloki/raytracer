@@ -121,16 +121,22 @@ pub enum Material {
 pub struct BodyProps {
     color: Point,
     material: Material,
+    fuzziness: f64,
 }
 
 impl BodyProps {
-    pub fn new(color: Point, material: Material) -> Self {
-        BodyProps { color, material }
+    pub fn new(color: Point, material: Material, fuzziness: f64) -> Self {
+        BodyProps {
+            color,
+            material,
+            fuzziness,
+        }
     }
     pub fn null() -> Self {
         BodyProps {
             color: Point::default(),
             material: Material::Ether,
+            fuzziness: 1,
         }
     }
     pub fn scatter(&self, ray_in: &Ray, rec: &HitRecord) -> Option<(Point, Ray)> {
@@ -146,7 +152,10 @@ impl BodyProps {
             }
             Material::Metal => {
                 let reflected = ray_in.direction.unit_vector().reflect(rec.normal);
-                let scattered = Ray::new(rec.p, reflected);
+                let scattered = Ray::new(
+                    rec.p,
+                    reflected + self.fuzziness * Point::random_in_unit_sphere(),
+                );
                 Some((self.color, scattered))
             }
         }
