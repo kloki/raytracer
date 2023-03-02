@@ -132,6 +132,21 @@ impl BodyProps {
             fuzziness,
         }
     }
+    pub fn metal(color: Point, fuzziness: f64) -> Self {
+        BodyProps {
+            color,
+            material: Material::Metal,
+            fuzziness,
+        }
+    }
+
+    pub fn lambertian(color: Point) -> Self {
+        BodyProps {
+            color,
+            material: Material::Lambertian,
+            fuzziness: 0.,
+        }
+    }
     pub fn null() -> Self {
         BodyProps {
             color: Point::default(),
