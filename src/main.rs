@@ -12,7 +12,7 @@ fn main() -> std::io::Result<()> {
     let world = three_balls();
     let mut tracer = Tracer::new(400, 255, 1., world, 100, 50);
     tracer.render();
-    let mut file = File::create("image.ppm")?;
+    let mut file = File::create("output.ppm")?;
     file.write_all(&tracer.image().as_bytes().to_vec())?;
     Ok(())
 }
