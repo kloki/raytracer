@@ -154,7 +154,7 @@ pub fn book_cover() -> Tracer {
     Tracer::new(image_width, image_height, camera, world, 500, 50)
 }
 #[allow(dead_code)]
-pub fn phone_wall_paper() -> Tracer {
+pub fn phone_wall_debug_paper() -> Tracer {
     let mut world = World::new();
 
     world.add(Sphere::new(
@@ -198,4 +198,52 @@ pub fn phone_wall_paper() -> Tracer {
         20.,
     );
     Tracer::new(image_width, image_height, camera, world, 100, 50)
+}
+
+#[allow(dead_code)]
+pub fn phone_wallpaper() -> Tracer {
+    let mut world = World::new();
+
+    world.add(Sphere::new(
+        Point::new(0., -1000., 0.),
+        1000.0,
+        BodyProps::metal(Point::new(0.7, 0.6, 0.5), 0.0),
+    ));
+
+    world.add(Sphere::new(
+        Point::new(0., 2., 0.),
+        2.,
+        BodyProps::metal(Point::new(0.1, 0.2, 0.5), 0.3),
+    ));
+    world.add(Sphere::new(
+        Point::new(1.5, 0.8, 5.),
+        0.8,
+        BodyProps::metal(Point::new(0.7, 0.2, 0.5), 0.0),
+    ));
+    world.add(Sphere::new(
+        Point::new(-2., 1.5, 4.),
+        1.5,
+        BodyProps::metal(Point::new(0.8, 0.6, 0.2), 0.),
+    ));
+    world.add(Sphere::new(
+        Point::new(1., 1.5, 3.),
+        1.5,
+        BodyProps::metal(Point::new(0.2, 0.6, 0.2), 0.1),
+    ));
+
+    let image_width: usize = 720;
+    let image_height: usize = 1480;
+    let aspect_ratio = image_width as f64 / image_height as f64;
+    let look_from = Point::new(-4., 20., 35.);
+    let look_at = Point::new(0., 0., 0.);
+    let camera = Camera::new(
+        look_from,
+        look_at,
+        Point::new(0., 1., 0.),
+        20.,
+        aspect_ratio,
+        0.1,
+        30.,
+    );
+    Tracer::new(image_width, image_height, camera, world, 500, 50)
 }
