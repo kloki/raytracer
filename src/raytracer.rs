@@ -1,3 +1,5 @@
+use std::f64::consts::PI;
+
 use crate::body::World;
 use crate::point::Point;
 use crate::window::Window;
@@ -25,13 +27,25 @@ pub struct Camera {
     lower_left_corner: Point,
 }
 
+fn degrees_to_radians(degrees: f64) -> f64 {
+    degrees * PI / 180.
+}
+
 impl Camera {
-    pub fn new(vp_width: f64, vp_height: f64, focal_length: f64) -> Self {
-        let origin = Point::new(0., 0., 0.);
-        let horizontal = Point::new(vp_width, 0., 0.);
-        let vertical = Point::new(0., vp_height, 0.);
-        let lower_left_corner =
-            origin - horizontal / 2. - vertical / 2. - Point::new(0., 0., focal_length);
+    pub fn new(look_from: Point, look_at: Point, vup: Point, vfov: f64, aspect_ratio: f64) -> Self {
+        let theta = degrees_to_radians(vfov);
+        let h = (theta / 2.).tan();
+        let vp_height = 2. * h;
+        let vp_width = aspect_ratio * vp_height;
+
+        let w = (look_from - look_at).unit_vector();
+        let u = (vup.cross(w)).unit_vector();
+        let v = w.cross(u);
+
+        let origin = look_from;
+        let horizontal = vp_width * u;
+        let vertical = vp_height * v;
+        let lower_left_corner = origin - horizontal / 2. - vertical / 2. - w;
         Camera {
             origin,
             horizontal,
@@ -62,13 +76,12 @@ impl Tracer {
     pub fn new(
         width: usize,
         height: usize,
-        focal_length: f64,
+        camera: Camera,
         world: World,
         samples_per_pixel: usize,
         max_depth: usize,
     ) -> Self {
         let screen = Window::new(width, height);
-        let camera = Camera::new(2. * (width as f64 / height as f64), 2., focal_length);
         Tracer {
             screen,
             width,
