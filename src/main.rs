@@ -7,7 +7,7 @@ mod raytracer;
 mod scenes;
 mod window;
 fn main() -> std::io::Result<()> {
-    let mut tracer = scenes::book_cover();
+    let mut tracer = scenes::phone_wall_paper();
     tracer.render();
     let mut file = File::create("output.ppm")?;
     file.write_all(&tracer.image().as_bytes().to_vec())?;

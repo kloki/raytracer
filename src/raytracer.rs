@@ -1,10 +1,12 @@
 use std::f64::consts::PI;
 
 use crate::body::World;
+use crate::color::Color;
 use crate::point::Point;
 use crate::window::Window;
 use indicatif::{ProgressBar, ProgressStyle};
 use rand::Rng;
+use rayon::prelude::*;
 pub struct Ray {
     pub origin: Point,
     pub direction: Point,
@@ -81,7 +83,7 @@ impl Camera {
 }
 
 pub struct Tracer {
-    screen: Window,
+    pub screen: Window,
     width: usize,
     height: usize,
     camera: Camera,
@@ -142,24 +144,34 @@ impl Tracer {
         bar
     }
     pub fn render(&mut self) {
-        let mut rng = rand::thread_rng();
-
         let bar = self.progress_bar();
 
-        for j in 0..self.height {
-            for i in 0..self.width {
-                bar.inc(1);
-                let mut color = Point::default();
-                for _ in 0..self.samples_per_pixel {
-                    let u = (i as f64 + rng.gen::<f64>()) / (self.width - 1) as f64;
-                    let v = (j as f64 + rng.gen::<f64>()) / (self.height - 1) as f64;
-                    let ray = self.camera.new_ray(u, v);
-                    color = color + self.ray_color(ray, self.max_depth);
-                }
+        let mut new_pixels: Vec<Vec<Color>> = vec![];
 
-                self.screen.pixels[j][i].set_color(color, self.samples_per_pixel);
-            }
+        for j in 0..self.height {
+            new_pixels.push(
+                (0..self.width)
+                    .into_par_iter()
+                    .map(|i| {
+                        let mut rng = rand::thread_rng();
+                        bar.inc(1);
+                        let mut color = Point::default();
+                        for _ in 0..self.samples_per_pixel {
+                            let u = (i as f64 + rng.gen::<f64>()) / (self.width - 1) as f64;
+                            let v = (j as f64 + rng.gen::<f64>()) / (self.height - 1) as f64;
+                            let ray = self.camera.new_ray(u, v);
+                            color = color + self.ray_color(ray, self.max_depth);
+                        }
+
+                        let mut rgb = Color::default();
+                        rgb.set_color(color, self.samples_per_pixel);
+                        rgb
+                    })
+                    .collect::<Vec<Color>>(),
+            )
         }
+
+        self.screen.pixels = new_pixels;
 
         bar.finish()
     }

@@ -84,14 +84,14 @@ impl Body for Sphere {
 }
 
 pub struct World {
-    bodies: Vec<Box<dyn Body>>,
+    bodies: Vec<Sphere>,
 }
 
 impl World {
     pub fn new() -> World {
         World { bodies: vec![] }
     }
-    pub fn add(&mut self, body: Box<dyn Body>) {
+    pub fn add(&mut self, body: Sphere) {
         self.bodies.push(body);
     }
     pub fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
