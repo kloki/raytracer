@@ -1,5 +1,4 @@
 use raytracer::Tracer;
-use scenes::{three_balls, two_metal_balls};
 use std::fs::File;
 use std::io::Write;
 mod body;
@@ -9,7 +8,7 @@ mod raytracer;
 mod scenes;
 mod window;
 fn main() -> std::io::Result<()> {
-    let world = three_balls();
+    let world = scenes::three_balls();
     let aspect_ratio = 16. / 9.;
     let mut tracer = Tracer::new(400, (400. / aspect_ratio) as usize, 1., world, 100, 50);
     tracer.render();
