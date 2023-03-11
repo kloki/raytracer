@@ -1,9 +1,7 @@
 use std::f64::consts::PI;
 
 use crate::body::World;
-use crate::color::Color;
 use crate::point::Point;
-use crate::window::Window;
 use indicatif::{ProgressBar, ProgressStyle};
 use rand::Rng;
 use rayon::prelude::*;
@@ -12,6 +10,41 @@ pub struct Ray {
     pub direction: Point,
 }
 
+#[derive(Clone, Debug)]
+pub struct Pixel {
+    red: u8,
+    green: u8,
+    blue: u8,
+}
+
+impl Pixel {
+    pub fn default() -> Self {
+        Pixel {
+            red: 0,
+            green: 0,
+            blue: 0,
+        }
+    }
+    pub fn transform_to_color(value: f64, samples: usize) -> u8 {
+        let v = match (value / samples as f64).sqrt() {
+            v if v < 0. => 0.,
+            v if v > 0.999 => 0.999,
+            v => v,
+        };
+        (v * 256.) as u8
+    }
+    pub fn from_point(point: Point, samples: usize) -> Self {
+        Pixel {
+            red: Self::transform_to_color(point.x, samples),
+            green: Self::transform_to_color(point.y, samples),
+            blue: Self::transform_to_color(point.z, samples),
+        }
+    }
+
+    pub fn to_ppm(&self) -> String {
+        format!("{:3} {:3} {:3}", self.red, self.green, self.blue)
+    }
+}
 impl Ray {
     pub fn new(origin: Point, direction: Point) -> Self {
         Ray { origin, direction }
@@ -83,7 +116,7 @@ impl Camera {
 }
 
 pub struct Tracer {
-    pub screen: Window,
+    pixels: Vec<Vec<Pixel>>,
     width: usize,
     height: usize,
     camera: Camera,
@@ -101,9 +134,10 @@ impl Tracer {
         samples_per_pixel: usize,
         max_depth: usize,
     ) -> Self {
-        let screen = Window::new(width, height);
+        let pixels: Vec<Vec<Pixel>> = vec![vec![Pixel::default(); width]; height];
+
         Tracer {
-            screen,
+            pixels,
             width,
             height,
             camera,
@@ -146,7 +180,7 @@ impl Tracer {
     pub fn render(&mut self) {
         let bar = self.progress_bar();
 
-        let mut new_pixels: Vec<Vec<Color>> = vec![];
+        let mut new_pixels: Vec<Vec<Pixel>> = vec![];
 
         for j in 0..self.height {
             new_pixels.push(
@@ -163,20 +197,26 @@ impl Tracer {
                             color = color + self.ray_color(ray, self.max_depth);
                         }
 
-                        let mut rgb = Color::default();
-                        rgb.set_color(color, self.samples_per_pixel);
-                        rgb
+                        Pixel::from_point(color, self.samples_per_pixel)
                     })
-                    .collect::<Vec<Color>>(),
+                    .collect::<Vec<Pixel>>(),
             )
         }
 
-        self.screen.pixels = new_pixels;
+        self.pixels = new_pixels;
 
         bar.finish()
     }
 
     pub fn image(&self) -> String {
-        self.screen.to_ppm()
+        let mut output = format!("P3\n{} {}\n255\n", self.width, self.height).to_owned();
+        for row in self.pixels.iter().rev() {
+            for pixel in row {
+                output.push_str(&pixel.to_ppm());
+                output.push_str(" ");
+            }
+            output.push_str("\n");
+        }
+        output
     }
 }
