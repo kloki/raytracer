@@ -19,6 +19,14 @@ impl Point {
         }
     }
 
+    pub fn random() -> Self {
+        let mut rng = rand::thread_rng();
+        Point {
+            x: rng.gen(),
+            y: rng.gen(),
+            z: rng.gen(),
+        }
+    }
     pub fn random_in_unit_sphere() -> Self {
         let mut rng = rand::thread_rng();
         loop {
