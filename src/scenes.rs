@@ -156,63 +156,37 @@ pub fn book_cover() -> Tracer {
 #[allow(dead_code)]
 pub fn phone_wall_paper() -> Tracer {
     let mut world = World::new();
+
     world.add(Sphere::new(
-        Point::new(0., -1000., -1.),
+        Point::new(0., -1000.5, -1.),
         1000.0,
-        BodyProps::matte(Point::new(0.5, 0.5, 0.5)),
-    ));
-
-    // let mut rng = rand::thread_rng();
-
-    // for a in -11..11 {
-    //     for b in -11..11 {
-    //         let location = Point::new(
-    //             a as f64 + 0.9 * rng.gen::<f64>(),
-    //             0.2,
-    //             b as f64 + 0.9 * rng.gen::<f64>(),
-    //         );
-    //         match rng.gen::<f64>() {
-    //             x if x < 0.8 => {
-    //                 world.add(Sphere::new(
-    //                     location,
-    //                     0.2,
-    //                     BodyProps::matte(Point::random() * Point::random()),
-    //                 ));
-    //             }
-    //             x if x < 0.95 => {
-    //                 world.add(Sphere::new(
-    //                     location,
-    //                     0.2,
-    //                     BodyProps::metal(Point::random(), rng.gen_range(0.5..1.)),
-    //                 ));
-    //             }
-    //             _ => {
-    //                 world.add(Sphere::new(location, 0.2, BodyProps::glass(1.5)));
-    //             }
-    //         }
-    //     }
-    // }
-
-    world.add(Sphere::new(
-        Point::new(0., 1., 0.),
-        1.,
-        BodyProps::glass(1.5),
+        BodyProps::matte(Point::new(0.2, 0.2, 0.2)),
     ));
     world.add(Sphere::new(
-        Point::new(-4., 1., 0.),
-        1.,
-        BodyProps::matte(Point::new(0.8, 0.8, 0.)),
+        Point::new(0., 0., -1.),
+        0.5,
+        BodyProps::matte(Point::new(0.1, 0.2, 0.5)),
+    ));
+    world.add(Sphere::new(
+        Point::new(-1., 0., -1.),
+        0.5,
+        BodyProps::glass(-1.5),
+    ));
+    world.add(Sphere::new(
+        Point::new(-1., 0., -2.),
+        0.5,
+        BodyProps::matte(Point::new(0.1, 0.2, 0.5)),
     ));
 
     world.add(Sphere::new(
-        Point::new(4., 1., 0.),
-        1.,
-        BodyProps::metal(Point::new(0.7, 0.6, 0.5), 0.),
+        Point::new(1., 0., -1.),
+        0.5,
+        BodyProps::metal(Point::new(0.8, 0.6, 0.2), 0.),
     ));
     let image_width: usize = 720;
     let image_height: usize = 1480;
     let aspect_ratio = image_width as f64 / image_height as f64;
-    let look_from = Point::new(13., 2., 3.);
+    let look_from = Point::new(3., 10., 20.);
     let look_at = Point::new(0., 0., 0.);
     let camera = Camera::new(
         look_from,
@@ -221,7 +195,7 @@ pub fn phone_wall_paper() -> Tracer {
         20.,
         aspect_ratio,
         0.1,
-        10.,
+        20.,
     );
-    Tracer::new(image_width, image_height, camera, world, 10, 50)
+    Tracer::new(image_width, image_height, camera, world, 100, 50)
 }
