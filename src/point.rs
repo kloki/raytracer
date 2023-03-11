@@ -32,6 +32,19 @@ impl Point {
             }
         }
     }
+    pub fn random_in_unit_disk() -> Self {
+        let mut rng = rand::thread_rng();
+        loop {
+            let p = Point {
+                x: rng.gen_range(0f64..2.) - 1.,
+                y: rng.gen_range(0f64..2.) - 1.,
+                z: 0.,
+            };
+            if p.length_squared() < 1. {
+                return p;
+            }
+        }
+    }
     pub fn random_unit_vector() -> Self {
         Self::random_in_unit_sphere().unit_vector()
     }

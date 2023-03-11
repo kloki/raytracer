@@ -25,6 +25,9 @@ pub struct Camera {
     horizontal: Point,
     vertical: Point,
     lower_left_corner: Point,
+    u: Point,
+    v: Point,
+    lens_radius: f64,
 }
 
 fn degrees_to_radians(degrees: f64) -> f64 {
@@ -32,7 +35,15 @@ fn degrees_to_radians(degrees: f64) -> f64 {
 }
 
 impl Camera {
-    pub fn new(look_from: Point, look_at: Point, vup: Point, vfov: f64, aspect_ratio: f64) -> Self {
+    pub fn new(
+        look_from: Point,
+        look_at: Point,
+        vup: Point,
+        vfov: f64,
+        aspect_ratio: f64,
+        aperture: f64,
+        focus_dist: f64,
+    ) -> Self {
         let theta = degrees_to_radians(vfov);
         let h = (theta / 2.).tan();
         let vp_height = 2. * h;
@@ -43,21 +54,28 @@ impl Camera {
         let v = w.cross(u);
 
         let origin = look_from;
-        let horizontal = vp_width * u;
-        let vertical = vp_height * v;
-        let lower_left_corner = origin - horizontal / 2. - vertical / 2. - w;
+        let horizontal = focus_dist * vp_width * u;
+        let vertical = focus_dist * vp_height * v;
+        let lower_left_corner = origin - horizontal / 2. - vertical / 2. - focus_dist * w;
+        let lens_radius = aperture / 2.;
         Camera {
             origin,
             horizontal,
             vertical,
             lower_left_corner,
+            u,
+            v,
+            lens_radius,
         }
     }
     pub fn new_ray(&self, u: f64, v: f64) -> Ray {
+        let rd = self.lens_radius * Point::random_unit_vector();
+        let offset = self.u * rd.x + self.v * rd.y;
         Ray {
-            origin: self.origin,
+            origin: self.origin + offset,
             direction: self.lower_left_corner + u * self.horizontal + v * self.vertical
-                - self.origin,
+                - self.origin
+                - offset,
         }
     }
 }
