@@ -115,8 +115,8 @@ impl World {
 #[derive(Debug, Clone, Copy)]
 pub enum Material {
     Lambertian,
-    Dielectric,
-    Metal,
+    Dielectric(f64),
+    Metal(f64),
     Ether,
 }
 
@@ -124,26 +124,17 @@ pub enum Material {
 pub struct BodyProps {
     color: Point,
     material: Material,
-    fuzziness: f64,
-    index_refraction: f64,
 }
 
 impl BodyProps {
     #[allow(dead_code)]
-    pub fn new(color: Point, material: Material, fuzziness: f64, index_refraction: f64) -> Self {
-        BodyProps {
-            color,
-            material,
-            fuzziness,
-            index_refraction,
-        }
+    pub fn new(color: Point, material: Material) -> Self {
+        BodyProps { color, material }
     }
     pub fn metal(color: Point, fuzziness: f64) -> Self {
         BodyProps {
             color,
-            material: Material::Metal,
-            fuzziness,
-            index_refraction: 1.,
+            material: Material::Metal(fuzziness),
         }
     }
 
@@ -151,24 +142,18 @@ impl BodyProps {
         BodyProps {
             color,
             material: Material::Lambertian,
-            fuzziness: 0.,
-            index_refraction: 1.,
         }
     }
     pub fn glass(index_refraction: f64) -> Self {
         BodyProps {
             color: Point::new(1., 1., 1.),
-            material: Material::Dielectric,
-            fuzziness: 0.,
-            index_refraction,
+            material: Material::Dielectric(index_refraction),
         }
     }
     pub fn null() -> Self {
         BodyProps {
             color: Point::default(),
             material: Material::Ether,
-            fuzziness: 1.,
-            index_refraction: 1.,
         }
     }
     pub fn reflectance(cosine: f64, ref_idx: f64) -> f64 {
@@ -187,19 +172,19 @@ impl BodyProps {
                 let scattered = Ray::new(rec.p, scatter_direction);
                 Some((self.color, scattered))
             }
-            Material::Metal => {
+            Material::Metal(fuzziness) => {
                 let reflected = ray_in.direction.unit_vector().reflect(rec.normal);
                 let scattered = Ray::new(
                     rec.p,
-                    reflected + self.fuzziness * Point::random_in_unit_sphere(),
+                    reflected + fuzziness * Point::random_in_unit_sphere(),
                 );
                 Some((self.color, scattered))
             }
-            Material::Dielectric => {
+            Material::Dielectric(index_refraction) => {
                 let refraction_ratio = if rec.front_face {
-                    1.0 / self.index_refraction
+                    1.0 / index_refraction
                 } else {
-                    self.index_refraction
+                    index_refraction
                 };
 
                 let unit_direction = ray_in.direction.unit_vector();
