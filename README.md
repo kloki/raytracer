@@ -1,5 +1,7 @@
 # Raytracer
 
+![Example](./example.ppm)
+
 Raytracer written in Rust to practise the language.
 Made using [this](https://raytracing.github.io/books/RayTracingInOneWeekend.html) step-by-step guide.
 
