@@ -1,6 +1,6 @@
 # Raytracer
 
-![Example](./example.ppm)
+![Example](./example.png)
 
 Raytracer written in Rust to practise the language.
 Made using [this](https://raytracing.github.io/books/RayTracingInOneWeekend.html) step-by-step guide.
