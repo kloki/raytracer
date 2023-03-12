@@ -179,13 +179,10 @@ impl Tracer {
     }
     pub fn render(&mut self) {
         let bar = self.progress_bar();
-
-        let mut new_pixels: Vec<Vec<Pixel>> = vec![];
-
-        for j in 0..self.height {
-            new_pixels.push(
+        self.pixels = (0..self.height)
+            .into_par_iter()
+            .map(|j| {
                 (0..self.width)
-                    .into_par_iter()
                     .map(|i| {
                         let mut rng = rand::thread_rng();
                         bar.inc(1);
@@ -199,11 +196,9 @@ impl Tracer {
 
                         Pixel::from_point(color, self.samples_per_pixel)
                     })
-                    .collect::<Vec<Pixel>>(),
-            )
-        }
-
-        self.pixels = new_pixels;
+                    .collect::<Vec<Pixel>>()
+            })
+            .collect();
 
         bar.finish()
     }
