@@ -211,14 +211,14 @@ pub fn phone_wallpaper() -> Tracer {
     ));
 
     world.add(Sphere::new(
-        Point::new(0., 2., 0.),
-        2.,
+        Point::new(0., 1.8, 0.),
+        1.8,
         BodyProps::metal(Point::new(0.1, 0.2, 0.5), 0.3),
     ));
     world.add(Sphere::new(
         Point::new(1.5, 0.8, 5.),
         0.8,
-        BodyProps::metal(Point::new(0.7, 0.2, 0.5), 0.0),
+        BodyProps::matte(Point::new(0.7, 0.2, 0.5)),
     ));
     world.add(Sphere::new(
         Point::new(-2., 1.5, 4.),
@@ -226,9 +226,52 @@ pub fn phone_wallpaper() -> Tracer {
         BodyProps::metal(Point::new(0.8, 0.6, 0.2), 0.),
     ));
     world.add(Sphere::new(
+        Point::new(-2., 0.5, 5.8),
+        0.5,
+        BodyProps::glass(1.5),
+    ));
+
+    world.add(Sphere::new(
+        Point::new(-2.3, 0.2, 6.3),
+        0.2,
+        BodyProps::matte(Point::new(0.0, 0.1, 0.1)),
+    ));
+    world.add(Sphere::new(
+        Point::new(2., 0.3, 5.9),
+        0.3,
+        BodyProps::metal(Point::new(0.8, 0.8, 0.8), 0.),
+    ));
+    world.add(Sphere::new(
         Point::new(1., 1.5, 3.),
         1.5,
-        BodyProps::metal(Point::new(0.2, 0.6, 0.2), 0.1),
+        BodyProps::glass(1.5),
+    ));
+    world.add(Sphere::new(
+        Point::new(0.7, 0.6, 6.),
+        0.6,
+        BodyProps::matte(Point::new(0.3, 0.6, 0.4)),
+    ));
+
+    world.add(Sphere::new(
+        Point::new(-1.1, 0.6, -12.1),
+        0.6,
+        BodyProps::matte(Point::new(0.9, 0.2, 0.2)),
+    ));
+    world.add(Sphere::new(
+        Point::new(-1.6, 0.5, -11.),
+        0.5,
+        BodyProps::metal(Point::new(0.5, 0.8, 0.5), 0.2),
+    ));
+    world.add(Sphere::new(
+        Point::new(-0.9, 0.3, -11.0),
+        0.3,
+        BodyProps::matte(Point::new(0.3, 0.2, 0.7)),
+    ));
+
+    world.add(Sphere::new(
+        Point::new(-2., 0.5, 5.8),
+        0.5,
+        BodyProps::glass(1.5),
     ));
 
     let image_width: usize = 720;
