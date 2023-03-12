@@ -114,6 +114,9 @@ impl Point {
     pub fn unit_vector(self) -> Point {
         self / self.length()
     }
+    pub fn as_array(&self) -> [f64; 3] {
+        [self.x, self.y, self.z]
+    }
 }
 
 impl ops::Add<Point> for Point {
