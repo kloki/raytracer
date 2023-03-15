@@ -48,15 +48,25 @@ pub fn square() -> Tracer {
     world.add(Box::new(Sphere::new(
         Point::new(0., -100.5, -1.),
         100.0,
-        BodyProps::matte(Point::new(0.8, 0.8, 0.)),
+        BodyProps::matte(Point::new(0.2, 0.2, 0.2)),
     )));
     world.add(Box::new(Cube::new(
-        Point::new(0., -1., 0.),
-        Point::new(1., 0., -1.),
-        BodyProps::metal(Point::new(0.7, 0.3, 0.3), 0.0),
+        Point::new(-1.5, 0., 0.),
+        Point::new(-0.5, 1., 1.),
+        BodyProps::matte(Point::new(0.8, 0.2, 0.2)),
+    )));
+    world.add(Box::new(Cube::new(
+        Point::new(0., 0., 0.),
+        Point::new(1., 1., 1.),
+        BodyProps::metal(Point::new(0.7, 0.7, 0.7), 0.0),
+    )));
+    world.add(Box::new(Cube::new(
+        Point::new(1.5, 0., 0.),
+        Point::new(2.5, 1., 1.),
+        BodyProps::matte(Point::new(0.5, 0.7, 0.2)),
     )));
     let aspect_ratio = 16. / 9.;
-    let look_from = Point::new(1., 1., 5.);
+    let look_from = Point::new(4., 3., 5.);
     let look_at = Point::new(0., 0., 0.);
     let camera = Camera::new(
         look_from,
@@ -215,14 +225,14 @@ pub fn phone_wallpaper() -> Tracer {
         BodyProps::metal(Point::new(0.8, 0.6, 0.2), 0.),
     )));
     world.add(Box::new(Sphere::new(
-        Point::new(-2., 0.5, 5.8),
-        0.5,
+        Point::new(-2., 0.4, 5.8),
+        0.4,
         BodyProps::glass(1.5),
     )));
 
-    world.add(Box::new(Sphere::new(
-        Point::new(-2.3, 0.2, 6.3),
-        0.2,
+    world.add(Box::new(Cube::new_as_sphere(
+        Point::new(-2.3, 0.15, 6.3),
+        0.15,
         BodyProps::matte(Point::new(0.0, 0.1, 0.1)),
     )));
     world.add(Box::new(Sphere::new(
@@ -235,31 +245,31 @@ pub fn phone_wallpaper() -> Tracer {
         1.5,
         BodyProps::glass(1.5),
     )));
-    world.add(Box::new(Sphere::new(
-        Point::new(0.7, 0.6, 6.),
-        0.6,
+    world.add(Box::new(Cube::new_as_sphere(
+        Point::new(0.6, 0.4, 6.),
+        0.4,
         BodyProps::matte(Point::new(0.3, 0.6, 0.4)),
     )));
 
     world.add(Box::new(Sphere::new(
-        Point::new(-1.1, 0.6, -12.1),
+        Point::new(-1.1, 0.5, -12.1),
         0.6,
         BodyProps::matte(Point::new(0.9, 0.2, 0.2)),
     )));
     world.add(Box::new(Sphere::new(
-        Point::new(-1.6, 0.5, -11.),
+        Point::new(-1.6, 0.4, -11.),
         0.5,
         BodyProps::metal(Point::new(0.5, 0.8, 0.5), 0.2),
     )));
-    world.add(Box::new(Sphere::new(
-        Point::new(-0.9, 0.3, -11.0),
+    world.add(Box::new(Cube::new_as_sphere(
+        Point::new(-0.8, 0.2, -11.0),
         0.3,
         BodyProps::matte(Point::new(0.3, 0.2, 0.7)),
     )));
 
     world.add(Box::new(Sphere::new(
-        Point::new(-2., 0.5, 5.8),
-        0.5,
+        Point::new(-2., 0.3, 5.8),
+        0.4,
         BodyProps::glass(1.5),
     )));
 

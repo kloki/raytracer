@@ -165,6 +165,10 @@ impl Cube {
             ],
         }
     }
+    pub fn new_as_sphere(center: Point, radius: f64, body_props: BodyProps) -> Self {
+        let offset = Point::new(radius, radius, radius);
+        Cube::new(center - offset, center + offset, body_props)
+    }
 }
 
 impl Body for Cube {
