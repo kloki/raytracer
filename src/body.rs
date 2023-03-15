@@ -29,12 +29,9 @@ impl HitRecord {
     }
 }
 
-pub trait Body {
+pub trait Body: Sync + Send {
     fn hit(&self, _ray: &Ray, _t_min: f64, _t_max: f64, _rec: &mut HitRecord) -> bool {
         false
-    }
-    fn color(&self, _ray: &Ray, _angle: f64) -> Point {
-        Point::new(1., 0., 0.)
     }
 }
 
@@ -76,22 +73,124 @@ impl Body for Sphere {
         rec.body_props = self.body_props;
         true
     }
+}
 
-    fn color(&self, ray: &Ray, angle: f64) -> Point {
-        let n = (ray.at(angle) - Point::new(0., 0., -1.)).unit_vector();
-        0.5 * Point::new(n.x + 1., n.y + 1., n.z + 1.)
+pub struct Rect {
+    a0: f64,
+    a1: f64,
+    b0: f64,
+    b1: f64,
+    k: f64,
+    axis: Axis,
+    body_props: BodyProps,
+}
+
+pub enum Axis {
+    XY,
+    XZ,
+    YZ,
+}
+impl Rect {
+    pub fn new(
+        a0: f64,
+        a1: f64,
+        b0: f64,
+        b1: f64,
+        k: f64,
+        axis: Axis,
+        body_props: BodyProps,
+    ) -> Self {
+        Rect {
+            a0,
+            a1,
+            b0,
+            b1,
+            k,
+            axis,
+            body_props,
+        }
+    }
+}
+
+impl Body for Rect {
+    fn hit(&self, ray: &Ray, t_min: f64, t_max: f64, rec: &mut HitRecord) -> bool {
+        let t = match self.axis {
+            Axis::XY => (self.k - ray.origin.z) / ray.direction.z,
+            Axis::XZ => (self.k - ray.origin.y) / ray.direction.y,
+            Axis::YZ => (self.k - ray.origin.x) / ray.direction.x,
+        };
+        if t < t_min || t > t_max {
+            return false;
+        }
+        let a = match self.axis {
+            Axis::XY => ray.origin.x + t * ray.direction.x,
+            Axis::XZ => ray.origin.x + t * ray.direction.x,
+            Axis::YZ => ray.origin.y + t * ray.direction.y,
+        };
+        let b = match self.axis {
+            Axis::XY => ray.origin.y + t * ray.direction.y,
+            Axis::XZ => ray.origin.z + t * ray.direction.z,
+            Axis::YZ => ray.origin.z + t * ray.direction.z,
+        };
+        if a < self.a0 || a > self.a1 || b < self.b0 || b > self.b1 {
+            return false;
+        }
+        rec.t = t;
+        rec.set_face_normal(ray, Point::new(0., 0., 1.));
+        rec.p = ray.at(t);
+        rec.body_props = self.body_props;
+        true
+    }
+}
+
+#[allow(dead_code)]
+pub struct Cube {
+    min: Point,
+    max: Point,
+    sides: [Rect; 6],
+}
+
+impl Cube {
+    pub fn new(p0: Point, p1: Point, body_props: BodyProps) -> Self {
+        Cube {
+            min: p0,
+            max: p1,
+            sides: [
+                Rect::new(p0.x, p1.x, p0.y, p1.y, p1.z, Axis::XY, body_props),
+                Rect::new(p0.x, p1.x, p0.y, p1.y, p0.z, Axis::XY, body_props),
+                Rect::new(p0.x, p1.x, p0.z, p1.z, p1.y, Axis::XZ, body_props),
+                Rect::new(p0.x, p1.x, p0.z, p1.z, p0.y, Axis::XZ, body_props),
+                Rect::new(p0.y, p1.y, p0.z, p1.z, p1.x, Axis::YZ, body_props),
+                Rect::new(p0.y, p1.y, p0.z, p1.z, p0.x, Axis::YZ, body_props),
+            ],
+        }
+    }
+}
+
+impl Body for Cube {
+    fn hit(&self, ray: &Ray, t_min: f64, t_max: f64, rec: &mut HitRecord) -> bool {
+        let mut hit_anything = false;
+        let mut closest_so_for = t_max;
+
+        for body in &self.sides {
+            if body.hit(ray, t_min, closest_so_for, rec) {
+                hit_anything = true;
+                closest_so_for = rec.t;
+            }
+        }
+        return hit_anything;
     }
 }
 
 pub struct World {
-    bodies: Vec<Sphere>,
+    bodies: Vec<Box<dyn Body>>,
 }
 
 impl World {
     pub fn new() -> World {
         World { bodies: vec![] }
     }
-    pub fn add(&mut self, body: Sphere) {
+    pub fn add(&mut self, body: Box<dyn Body>) {
         self.bodies.push(body);
     }
     pub fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {

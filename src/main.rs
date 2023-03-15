@@ -5,7 +5,7 @@ mod point;
 mod raytracer;
 mod scenes;
 fn main() -> std::io::Result<()> {
-    let mut tracer = scenes::three_balls();
+    let mut tracer = scenes::square();
     tracer.render();
     let mut file = File::create("output.ppm")?;
     file.write_all(&tracer.image().as_bytes().to_vec())?;
