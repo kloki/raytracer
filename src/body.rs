@@ -33,9 +33,9 @@ impl AABB {
                 self.a.z.min(other.a.z),
             ),
             Point::new(
-                self.b.x.min(other.b.x),
-                self.b.y.min(other.b.y),
-                self.b.z.min(other.b.z),
+                self.b.x.max(other.b.x),
+                self.b.y.max(other.b.y),
+                self.b.z.max(other.b.z),
             ),
         )
     }
