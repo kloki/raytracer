@@ -2,6 +2,7 @@ use crate::point::Point;
 use crate::raytracer::Ray;
 use std::iter::zip;
 
+#[derive(Clone, Copy)]
 pub struct AABB {
     a: Point,
     b: Point,
@@ -210,7 +211,6 @@ impl Body for Rect {
     }
 }
 
-#[allow(dead_code)]
 pub struct Cube {
     min: Point,
     max: Point,
@@ -253,6 +253,35 @@ impl Body for Cube {
     }
     fn bounding_box(&self) -> AABB {
         AABB::new(self.min, self.max)
+    }
+}
+
+pub struct BVH {
+    left: Box<dyn Body>,
+    right: Box<dyn Body>,
+    aabb: AABB,
+}
+
+impl BVH {
+    pub fn new(left: Box<dyn Body>, right: Box<dyn Body>) -> Self {
+        let aabb = left.bounding_box().surrounding_box(right.bounding_box());
+        Self { left, right, aabb }
+    }
+}
+
+impl Body for BVH {
+    fn hit(&self, ray: &Ray, t_min: f64, t_max: f64, rec: &mut HitRecord) -> bool {
+        if !self.aabb.hit(ray, t_min, t_max) {
+            return false;
+        }
+
+        if self.left.hit(ray, t_min, t_max, rec) {
+            self.right.hit(ray, t_min, t_max, rec);
+        }
+        true
+    }
+    fn bounding_box(&self) -> AABB {
+        self.aabb
     }
 }
 
