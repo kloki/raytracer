@@ -191,6 +191,23 @@ impl Body for Rect {
         rec.body_props = self.body_props;
         true
     }
+
+    fn bounding_box(&self) -> AABB {
+        match self.axis {
+            Axis::XY => AABB::new(
+                Point::new(self.a0, self.b0, self.k - 0.0001),
+                Point::new(self.a1, self.b1, self.k + 0.0001),
+            ),
+            Axis::XZ => AABB::new(
+                Point::new(self.a0, self.k - 0.0001, self.b0),
+                Point::new(self.a1, self.k + 0.0001, self.b1),
+            ),
+            Axis::YZ => AABB::new(
+                Point::new(self.k - 0.0001, self.a0, self.b0),
+                Point::new(self.k + 0.0001, self.a1, self.b1),
+            ),
+        }
+    }
 }
 
 #[allow(dead_code)]
@@ -233,6 +250,9 @@ impl Body for Cube {
             }
         }
         return hit_anything;
+    }
+    fn bounding_box(&self) -> AABB {
+        AABB::new(self.min, self.max)
     }
 }
 
