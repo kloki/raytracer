@@ -1,6 +1,6 @@
 use std::fs::File;
 use std::io::Write;
-mod body;
+mod bodies;
 mod point;
 mod raytracer;
 mod scenes;

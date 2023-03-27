@@ -1,6 +1,6 @@
 use std::f64::consts::PI;
 
-use crate::body::World;
+use crate::bodies::World;
 use crate::point::Point;
 use indicatif::{ProgressBar, ProgressStyle};
 use rand::Rng;

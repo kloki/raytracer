@@ -1,4 +1,4 @@
-use crate::body::{BodyProps, Cube, Sphere, World};
+use crate::bodies::{BodyProps, Cube, Sphere, World};
 use crate::point::Point;
 use crate::raytracer::{Camera, Tracer};
 use rand::Rng;
