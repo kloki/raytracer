@@ -11,8 +11,8 @@ pub struct BVH {
 impl BVH {
     pub fn new(mut bodies: Vec<Box<dyn Body>>) -> Self {
         let aabb = AABB::from_bodies(&bodies).unwrap();
-        let lenght = &bodies.len();
-        match lenght {
+        let length = &bodies.len();
+        match length {
             0 => panic!("got an empty world"),
             1 => BVH {
                 left: bodies.pop().unwrap(),
@@ -25,7 +25,12 @@ impl BVH {
                 aabb,
             },
             _ => {
-                panic!("not_impleMented")
+                let (left, right) = bodies.split_at_mut(length / 2);
+                BVH {
+                    left: BVH::new(left.to_vec()),
+                    right: BVH::new(right.to_vec()),
+                    aabb,
+                }
             }
         }
     }
