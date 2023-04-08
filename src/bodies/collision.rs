@@ -13,7 +13,7 @@ impl AABB {
         AABB { a, b }
     }
 
-    pub fn from_bodies(bodies: &Vec<Box<dyn Body>>) -> Option<AABB> {
+    pub fn from_bodies(bodies: &Vec<&dyn Body>) -> Option<AABB> {
         if bodies.is_empty() {
             return None;
         }
@@ -89,22 +89,5 @@ pub trait Body: Sync + Send {
     fn bounding_box(&self) -> AABB;
     fn color(&self, _ray: &Ray, _angle: f64) -> Point {
         Point::new(1., 0., 0.)
-    }
-}
-pub struct World {
-    node: BVH,
-}
-
-impl World {
-    pub fn new(bodies: Vec<Box<dyn Body>>) -> World {
-        let bvh = BVH::new(bodies);
-        World { node: bvh }
-    }
-    pub fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
-        let mut rec = HitRecord::default();
-        if !self.node.hit(ray, t_min, t_max, &mut rec) {
-            return None;
-        }
-        Some(rec)
     }
 }

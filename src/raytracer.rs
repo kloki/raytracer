@@ -1,6 +1,6 @@
 use std::f64::consts::PI;
 
-use crate::bodies::World;
+use crate::bodies::{Body, HitRecord, BVH};
 use crate::point::Point;
 use indicatif::{ProgressBar, ProgressStyle};
 use rand::Rng;
@@ -120,7 +120,6 @@ pub struct Tracer {
     width: usize,
     height: usize,
     camera: Camera,
-    world: World,
     samples_per_pixel: usize,
     max_depth: usize,
 }
@@ -130,7 +129,6 @@ impl Tracer {
         width: usize,
         height: usize,
         camera: Camera,
-        world: World,
         samples_per_pixel: usize,
         max_depth: usize,
     ) -> Self {
@@ -141,21 +139,21 @@ impl Tracer {
             width,
             height,
             camera,
-            world,
             samples_per_pixel,
             max_depth,
         }
     }
-    pub fn ray_color(&self, ray: Ray, depth: usize) -> Point {
+    pub fn ray_color(&self, ray: Ray, depth: usize, world: &BVH) -> Point {
         if depth <= 0 {
             return Point::default();
         }
 
-        if let Some(record) = self.world.hit(&ray, 0.001, f64::INFINITY) {
+        let mut record = HitRecord::default();
+        if world.hit(&ray, 0.001, f64::INFINITY, &mut record) {
             match record.body_props.scatter(&ray, &record) {
                 None => return Point::default(),
                 Some((attenuation, scattered)) => {
-                    return attenuation * self.ray_color(scattered, depth - 1)
+                    return attenuation * self.ray_color(scattered, depth - 1, world)
                 }
             }
         }
@@ -177,7 +175,7 @@ impl Tracer {
         );
         bar
     }
-    pub fn render(&mut self) {
+    pub fn render(&mut self, world: &BVH) {
         let bar = self.progress_bar();
         self.pixels = (0..self.height)
             .into_par_iter()
@@ -191,7 +189,7 @@ impl Tracer {
                             let u = (i as f64 + rng.gen::<f64>()) / (self.width - 1) as f64;
                             let v = (j as f64 + rng.gen::<f64>()) / (self.height - 1) as f64;
                             let ray = self.camera.new_ray(u, v);
-                            color = color + self.ray_color(ray, self.max_depth);
+                            color = color + self.ray_color(ray, self.max_depth, world);
                         }
 
                         Pixel::from_point(color, self.samples_per_pixel)
