@@ -1,33 +1,37 @@
 use crate::bodies::collision::{Body, HitRecord, AABB};
+
+use crate::point::Point;
 use crate::raytracer::Ray;
-pub struct BVH<'a> {
-    left: &'a dyn Body,
-    right: &'a dyn Body,
+pub struct BVH {
+    left: Box<dyn Body>,
+    right: Box<dyn Body>,
     aabb: AABB,
 }
 
-impl<'a> BVH<'a> {
-    pub fn new(bodies: Vec<&'a dyn Body>) -> Self {
+impl BVH {
+    pub fn new(mut bodies: Vec<Box<dyn Body>>) -> Self {
         let aabb = AABB::from_bodies(&bodies).unwrap();
         let lenght = &bodies.len();
         match lenght {
             0 => panic!("got an empty world"),
             1 => BVH {
-                left: bodies[0],
-                right: bodies[0],
+                left: bodies.pop().unwrap(),
+                right: Box::new(NullBody {}),
                 aabb,
             },
             2 => BVH {
-                left: bodies[0],
-                right: bodies[1],
+                left: bodies.pop().unwrap(),
+                right: bodies.pop().unwrap(),
                 aabb,
             },
-            _ => panic!("not implemented"),
+            _ => {
+                panic!("not_impleMented")
+            }
         }
     }
 }
 
-impl<'a> Body for BVH<'a> {
+impl Body for BVH {
     fn hit(&self, ray: &Ray, t_min: f64, t_max: f64, rec: &mut HitRecord) -> bool {
         if !self.aabb.hit(ray, t_min, t_max) {
             return false;
@@ -39,5 +43,17 @@ impl<'a> Body for BVH<'a> {
     }
     fn bounding_box(&self) -> AABB {
         self.aabb
+    }
+}
+
+struct NullBody;
+
+impl Body for NullBody {
+    fn hit(&self, _ray: &Ray, _t_min: f64, _t_max: f64, _rec: &mut HitRecord) -> bool {
+        false
+    }
+
+    fn bounding_box(&self) -> AABB {
+        AABB::new(Point::new(0., 0., 0.), Point::new(0., 0., 0.))
     }
 }

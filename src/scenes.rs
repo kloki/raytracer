@@ -1,11 +1,8 @@
 use crate::bodies::{Body, BodyProps, Cube, Sphere, BVH};
 use crate::point::Point;
 use crate::raytracer::{Camera, Tracer};
-use rand::Rng;
 #[allow(dead_code)]
 pub fn three_balls() -> Tracer {
-    let mut body_list: Vec<&dyn Body> = vec![];
-
     let floor = Sphere::new(
         Point::new(0., -100.5, -1.),
         100.0,
@@ -37,7 +34,7 @@ pub fn three_balls() -> Tracer {
         5.,
     );
     // let world = BVH::new(vec![&floor, &ball_1, &ball_2, &ball_3]);
-    let world = BVH::new(vec![&floor, &ball_1]);
+    let world = BVH::new(vec![Box::new(floor), Box::new(ball_1)]);
     let mut tracer = Tracer::new(400, (400. / aspect_ratio) as usize, camera, 100, 50);
     tracer.render(&world);
     tracer

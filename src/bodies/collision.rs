@@ -1,5 +1,4 @@
 use crate::bodies::bodyprops::BodyProps;
-use crate::bodies::bvh::BVH;
 use crate::point::Point;
 use crate::raytracer::Ray;
 use std::iter::zip;
@@ -13,7 +12,7 @@ impl AABB {
         AABB { a, b }
     }
 
-    pub fn from_bodies(bodies: &Vec<&dyn Body>) -> Option<AABB> {
+    pub fn from_bodies(bodies: &Vec<Box<dyn Body>>) -> Option<AABB> {
         if bodies.is_empty() {
             return None;
         }
