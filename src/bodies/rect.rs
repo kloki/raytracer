@@ -26,7 +26,7 @@ impl Rect {
         k: f64,
         axis: Axis,
         body_props: BodyProps,
-    ) -> Self {
+    ) -> Rect {
         Rect {
             a0,
             a1,

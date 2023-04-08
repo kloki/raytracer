@@ -7,9 +7,19 @@ pub struct BVH {
 }
 
 impl BVH {
-    pub fn new(left: Box<dyn Body>, right: Box<dyn Body>) -> Self {
-        let aabb = left.bounding_box().surrounding_box(right.bounding_box());
-        Self { left, right, aabb }
+    pub fn new(bodies: Vec<Box<dyn Body>>) -> Self {
+        let aabb = AABB::from_bodies(&bodies).unwrap();
+        let lenght = &bodies.len();
+        match lenght {
+            0 => panic!("got an empty world"),
+            1 => Self {
+                left: bodies[0],
+                right: bodies[0],
+                aabb,
+            },
+            2 => panic!("got an empty world"),
+            _ => panic!("not implemented"),
+        }
     }
 }
 

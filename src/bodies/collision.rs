@@ -1,4 +1,5 @@
 use crate::bodies::bodyprops::BodyProps;
+use crate::bodies::bvh::BVH;
 use crate::point::Point;
 use crate::raytracer::Ray;
 use std::iter::zip;
@@ -10,6 +11,17 @@ pub struct AABB {
 impl AABB {
     pub fn new(a: Point, b: Point) -> Self {
         AABB { a, b }
+    }
+
+    pub fn from_bodies(bodies: &Vec<Box<dyn Body>>) -> Option<AABB> {
+        if bodies.is_empty() {
+            return None;
+        }
+        let mut bbox = bodies[0].bounding_box();
+        for body in bodies.iter().skip(1) {
+            bbox = bbox.surrounding_box(body.bounding_box())
+        }
+        Some(bbox)
     }
 
     pub fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> bool {
@@ -80,38 +92,19 @@ pub trait Body: Sync + Send {
     }
 }
 pub struct World {
-    bodies: Vec<Box<dyn Body>>,
+    node: BVH,
 }
 
 impl World {
     pub fn new(bodies: Vec<Box<dyn Body>>) -> World {
-        World { bodies }
+        let bvh = BVH::new(bodies);
+        World { node: bvh }
     }
     pub fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
-        let mut hit_anything = false;
         let mut rec = HitRecord::default();
-        let mut closest_so_for = t_max;
-
-        for body in &self.bodies {
-            if body.hit(ray, t_min, closest_so_for, &mut rec) {
-                hit_anything = true;
-                closest_so_for = rec.t;
-            }
-        }
-        if !hit_anything {
+        if !self.node.hit(ray, t_min, t_max, &mut rec) {
             return None;
         }
         Some(rec)
-    }
-
-    pub fn bounding_box(&self) -> Option<AABB> {
-        if self.bodies.is_empty() {
-            return None;
-        }
-        let mut bounding_box = self.bodies[0].bounding_box();
-        for body in self.bodies.iter().skip(1) {
-            bounding_box = bounding_box.surrounding_box(body.bounding_box())
-        }
-        Some(bounding_box)
     }
 }

@@ -10,7 +10,7 @@ pub struct Cube {
 }
 
 impl Cube {
-    pub fn new(p0: Point, p1: Point, body_props: BodyProps) -> Self {
+    pub fn new(p0: Point, p1: Point, body_props: BodyProps) -> Cube {
         Cube {
             min: p0,
             max: p1,

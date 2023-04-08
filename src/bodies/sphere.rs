@@ -9,7 +9,7 @@ pub struct Sphere {
 }
 
 impl Sphere {
-    pub fn new(center: Point, radius: f64, body_props: BodyProps) -> Self {
+    pub fn new(center: Point, radius: f64, body_props: BodyProps) -> Sphere {
         Sphere {
             center,
             radius,

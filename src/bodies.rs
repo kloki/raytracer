@@ -2,7 +2,6 @@ pub mod bodyprops;
 pub mod bvh;
 pub mod collision;
 pub mod cube;
-pub mod null_body;
 pub mod rect;
 pub mod sphere;
 
