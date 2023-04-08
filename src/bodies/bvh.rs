@@ -19,10 +19,9 @@ impl Body for BVH {
             return false;
         }
 
-        if self.left.hit(ray, t_min, t_max, rec) {
-            self.right.hit(ray, t_min, t_max, rec);
-        }
-        true
+        let hit_left = self.left.hit(ray, t_min, t_max, rec);
+        let hit_right = self.right.hit(ray, t_min, t_max, rec);
+        hit_left || hit_right
     }
     fn bounding_box(&self) -> AABB {
         self.aabb

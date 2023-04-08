@@ -6,7 +6,7 @@ pub mod rect;
 pub mod sphere;
 
 pub use bodyprops::BodyProps;
-pub use collision::World;
+pub use collision::{Body, World};
 pub use cube::Cube;
 pub use rect::Rect;
 pub use sphere::Sphere;

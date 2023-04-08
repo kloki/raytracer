@@ -84,11 +84,8 @@ pub struct World {
 }
 
 impl World {
-    pub fn new() -> World {
-        World { bodies: vec![] }
-    }
-    pub fn add(&mut self, body: Box<dyn Body>) {
-        self.bodies.push(body);
+    pub fn new(bodies: Vec<Box<dyn Body>>) -> World {
+        World { bodies }
     }
     pub fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let mut hit_anything = false;
