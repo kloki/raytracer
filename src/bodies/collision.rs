@@ -24,17 +24,17 @@ impl AABB {
     }
 
     pub fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> bool {
-        let zipped = zip(
-            zip(self.a.as_array(), self.b.as_array()),
-            zip(ray.origin.as_array(), ray.direction.as_array()),
-        );
-        for ((a, b), (origin, direction)) in zipped {
-            let t0 = (a - origin / direction).min(b - origin / direction);
-            let t1 = (a - origin / direction).max(b - origin / direction);
-            if t1.min(t_max) <= t0.max(t_min) {
-                return false;
-            }
-        }
+        // let zipped = zip(
+        //     zip(self.a.as_array(), self.b.as_array()),
+        //     zip(ray.origin.as_array(), ray.direction.as_array()),
+        // );
+        // for ((a, b), (origin, direction)) in zipped {
+        //     let t0 = (a - origin / direction).min(b - origin / direction);
+        //     let t1 = (a - origin / direction).max(b - origin / direction);
+        //     if t1.min(t_max) <= t0.max(t_min) {
+        //         return false;
+        //     }
+        // }
         true
     }
     pub fn surrounding_box(&self, other: AABB) -> AABB {
