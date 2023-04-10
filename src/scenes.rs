@@ -33,8 +33,12 @@ pub fn three_balls() -> Tracer {
         0.1,
         5.,
     );
-    // let world = BVH::new(vec![&floor, &ball_1, &ball_2, &ball_3]);
-    let world = BVH::new(vec![Box::new(floor), Box::new(ball_1)]);
+    let world = BVH::new(vec![
+        Box::new(floor),
+        Box::new(ball_1),
+        Box::new(ball_2),
+        Box::new(ball_3),
+    ]);
     let mut tracer = Tracer::new(400, (400. / aspect_ratio) as usize, camera, 100, 50);
     tracer.render(&world);
     tracer

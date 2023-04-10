@@ -25,10 +25,10 @@ impl BVH {
                 aabb,
             },
             _ => {
-                let (left, right) = bodies.split_at_mut(length / 2);
+                let left = bodies.drain(0..(length / 2)).collect();
                 BVH {
-                    left: BVH::new(left.to_vec()),
-                    right: BVH::new(right.to_vec()),
+                    left: Box::new(BVH::new(left)),
+                    right: Box::new(BVH::new(bodies)),
                     aabb,
                 }
             }
