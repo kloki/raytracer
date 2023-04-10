@@ -1,3 +1,5 @@
+use std::f64::consts::PI;
+
 use crate::bodies::bodyprops::BodyProps;
 use crate::bodies::collision::{Body, HitRecord, AABB};
 use crate::point::Point;
@@ -38,7 +40,12 @@ impl Body for Sphere {
 
         rec.t = root;
         rec.p = ray.at(rec.t);
-        rec.set_face_normal(ray, (rec.p - self.center) / self.radius);
+        let outward_normal = (rec.p - self.center) / self.radius;
+        let theta = (-outward_normal.y).acos();
+        let phi = -outward_normal.z.atan2(outward_normal.x + PI);
+        rec.u = phi / (2. * PI);
+        rec.v = theta / PI;
+        rec.set_face_normal(ray, outward_normal);
         rec.body_props = self.body_props;
         true
     }
