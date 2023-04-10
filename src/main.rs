@@ -6,7 +6,7 @@ mod point;
 mod raytracer;
 mod scenes;
 fn main() -> std::io::Result<()> {
-    let tracer = scenes::phone_wallpaper();
+    let tracer = scenes::book_cover();
     let mut file = File::create("output.ppm")?;
     file.write_all(&tracer.image().as_bytes().to_vec())?;
     Ok(())
