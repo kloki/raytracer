@@ -1,7 +1,9 @@
+use std::fmt::Debug;
+
 use crate::bodies::bodyprops::BodyProps;
 use crate::point::Point;
 use crate::raytracer::Ray;
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct AABB {
     pub min: Point,
     pub max: Point,
@@ -80,7 +82,7 @@ impl HitRecord {
     }
 }
 
-pub trait Body: Sync + Send {
+pub trait Body: Sync + Send + Debug {
     fn hit(&self, _ray: &Ray, _t_min: f64, _t_max: f64, _rec: &mut HitRecord) -> bool {
         false
     }

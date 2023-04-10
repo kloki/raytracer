@@ -3,6 +3,7 @@ use crate::bodies::collision::{Body, HitRecord, AABB};
 use crate::bodies::rect::{Axis, Rect};
 use crate::point::Point;
 use crate::raytracer::Ray;
+#[derive(Debug)]
 pub struct Cube {
     min: Point,
     max: Point,

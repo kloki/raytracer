@@ -2,6 +2,7 @@ use crate::bodies::bodyprops::BodyProps;
 use crate::bodies::collision::{Body, HitRecord, AABB};
 use crate::point::Point;
 use crate::raytracer::Ray;
+#[derive(Debug)]
 pub struct Rect {
     a0: f64,
     a1: f64,

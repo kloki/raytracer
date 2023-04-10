@@ -143,8 +143,8 @@ pub fn book_cover() -> Tracer {
         BodyProps::metal(Point::new(0.7, 0.6, 0.5), 0.),
     )));
     let aspect_ratio = 3. / 2.;
-    let image_width: usize = 1200;
-    let image_height = (1200. / aspect_ratio) as usize;
+    let image_width: usize = 600;
+    let image_height = (600. / aspect_ratio) as usize;
     let look_from = Point::new(13., 2., 3.);
     let look_at = Point::new(0., 0., 0.);
     let camera = Camera::new(
