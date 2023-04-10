@@ -90,20 +90,14 @@ pub fn square() -> Tracer {
 pub fn two_spheres() -> Tracer {
     let mut body_list: Vec<Box<dyn Body>> = vec![];
     body_list.push(Box::new(Sphere::new(
-        Point::new(0., -10., 0.),
-        10.,
-        BodyProps::matte(Texture::Checkered(
-            Point::new(0.2, 0.3, 0.1),
-            Point::new(0.9, 0.9, 0.9),
-        )),
+        Point::new(0., -1000., 0.),
+        1000.,
+        BodyProps::matte(Texture::Noise(Point::new(0.2, 0.3, 0.1))),
     )));
     body_list.push(Box::new(Sphere::new(
-        Point::new(0., 10., 0.),
-        10.,
-        BodyProps::matte(Texture::Checkered(
-            Point::new(0.2, 0.1, 0.3),
-            Point::new(0.9, 0.9, 0.9),
-        )),
+        Point::new(0., 2., 0.),
+        2.,
+        BodyProps::matte(Texture::Noise(Point::new(0.2, 0.1, 0.3))),
     )));
 
     let aspect_ratio = 16. / 9.;
