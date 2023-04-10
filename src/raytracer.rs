@@ -122,6 +122,7 @@ pub struct Tracer {
     camera: Camera,
     samples_per_pixel: usize,
     max_depth: usize,
+    background: Point,
 }
 
 impl Tracer {
@@ -131,6 +132,7 @@ impl Tracer {
         camera: Camera,
         samples_per_pixel: usize,
         max_depth: usize,
+        background: Point,
     ) -> Self {
         let pixels: Vec<Vec<Pixel>> = vec![vec![Pixel::default(); width]; height];
 
@@ -141,6 +143,7 @@ impl Tracer {
             camera,
             samples_per_pixel,
             max_depth,
+            background,
         }
     }
     pub fn ray_color(&self, ray: Ray, depth: usize, world: &BVH) -> Point {
@@ -149,18 +152,19 @@ impl Tracer {
         }
 
         let mut record = HitRecord::default();
-        if world.hit(&ray, 0.001, f64::INFINITY, &mut record) {
-            match record.body_props.scatter(&ray, &record) {
-                None => return Point::default(),
-                Some((attenuation, scattered)) => {
-                    return attenuation * self.ray_color(scattered, depth - 1, world)
-                }
+        if !world.hit(&ray, 0.001, f64::INFINITY, &mut record) {
+            return self.background;
+        }
+
+        let emitted = record
+            .body_props
+            .color_emitted(record.v, record.u, record.p);
+        match record.body_props.scatter(&ray, &record) {
+            None => return emitted,
+            Some((attenuation, scattered)) => {
+                return emitted + attenuation * self.ray_color(scattered, depth - 1, world)
             }
         }
-        //background
-        let unit_d = ray.direction;
-        let t = 0.5 * (unit_d.y + 1.);
-        return (1. - t) * Point::new(1., 1., 1.) + t * Point::new(0.5, 0.7, 1.0);
     }
 
     pub fn progress_bar(&self) -> ProgressBar {

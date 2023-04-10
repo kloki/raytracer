@@ -8,6 +8,7 @@ pub enum Material {
     Lambertian,
     Dielectric(f64),
     Metal(f64),
+    DiffuseLight,
     Ether,
 }
 
@@ -35,6 +36,12 @@ impl BodyProps {
             material: Material::Lambertian,
         }
     }
+    pub fn light(texture: Texture) -> Self {
+        BodyProps {
+            texture,
+            material: Material::DiffuseLight,
+        }
+    }
     pub fn glass(index_refraction: f64) -> Self {
         BodyProps {
             texture: Texture::new_color(1., 1., 1.),
@@ -52,9 +59,17 @@ impl BodyProps {
         r0 = r0 * r0;
         r0 + (1. - r0) * (1. - cosine).powi(5)
     }
+
+    pub fn color_emitted(&self, u: f64, v: f64, p: Point) -> Point {
+        match self.material {
+            Material::DiffuseLight => self.texture.color(u, v, p),
+            _ => Point::default(),
+        }
+    }
     pub fn scatter(&self, ray_in: &Ray, rec: &HitRecord) -> Option<(Point, Ray)> {
         match self.material {
             Material::Ether => None,
+            Material::DiffuseLight => None,
             Material::Lambertian => {
                 let mut scatter_direction = rec.normal + Point::random_unit_vector();
                 if scatter_direction.near_zero() {

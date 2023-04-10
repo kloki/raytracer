@@ -10,6 +10,6 @@ pub use bodyprops::BodyProps;
 pub use bvh::BVH;
 pub use collision::{Body, HitRecord};
 pub use cube::Cube;
-pub use rect::Rect;
+pub use rect::{Axis, Rect};
 pub use sphere::Sphere;
 pub use texture::Texture;

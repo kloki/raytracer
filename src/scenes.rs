@@ -1,4 +1,4 @@
-use crate::bodies::{Body, BodyProps, Cube, Sphere, Texture, BVH};
+use crate::bodies::{Axis, Body, BodyProps, Cube, Rect, Sphere, Texture, BVH};
 use crate::point::Point;
 use crate::raytracer::{Camera, Tracer};
 use rand::Rng;
@@ -40,7 +40,15 @@ pub fn three_balls() -> Tracer {
         Box::new(ball_2),
         Box::new(ball_3),
     ]);
-    let mut tracer = Tracer::new(400, (400. / aspect_ratio) as usize, camera, 100, 50);
+    let background = Point::new(0.7, 0.8, 1.);
+    let mut tracer = Tracer::new(
+        400,
+        (400. / aspect_ratio) as usize,
+        camera,
+        100,
+        50,
+        background,
+    );
     tracer.render(&world);
     tracer
 }
@@ -81,7 +89,16 @@ pub fn square() -> Tracer {
     );
 
     let world = BVH::new(body_list);
-    let mut tracer = Tracer::new(400, (400. / aspect_ratio) as usize, camera, 100, 50);
+
+    let background = Point::new(0.7, 0.8, 1.);
+    let mut tracer = Tracer::new(
+        400,
+        (400. / aspect_ratio) as usize,
+        camera,
+        100,
+        50,
+        background,
+    );
     tracer.render(&world);
     tracer
 }
@@ -92,17 +109,29 @@ pub fn two_spheres() -> Tracer {
     body_list.push(Box::new(Sphere::new(
         Point::new(0., -1000., 0.),
         1000.,
-        BodyProps::matte(Texture::Noise(Point::new(0.2, 0.3, 0.1))),
+        BodyProps::matte(Texture::Checkered(
+            Point::new(0.2, 0.3, 0.1),
+            Point::new(0.2, 0.1, 0.3),
+        )),
     )));
     body_list.push(Box::new(Sphere::new(
         Point::new(0., 2., 0.),
-        2.,
-        BodyProps::matte(Texture::Noise(Point::new(0.2, 0.1, 0.3))),
+        1.,
+        BodyProps::matte(Texture::SolidColor(Point::new(0.2, 0.1, 0.3))),
+    )));
+    body_list.push(Box::new(Rect::new(
+        3.,
+        5.,
+        1.,
+        3.,
+        -2.,
+        Axis::XY,
+        BodyProps::light(Texture::SolidColor(Point::new(4., 4., 4.))),
     )));
 
     let aspect_ratio = 16. / 9.;
-    let look_from = Point::new(13., 2., 3.);
-    let look_at = Point::new(0., 0., 0.);
+    let look_from = Point::new(26., 3., 6.);
+    let look_at = Point::new(0., 2., 0.);
     let camera = Camera::new(
         look_from,
         look_at,
@@ -114,7 +143,97 @@ pub fn two_spheres() -> Tracer {
     );
 
     let world = BVH::new(body_list);
-    let mut tracer = Tracer::new(400, (400. / aspect_ratio) as usize, camera, 100, 50);
+    let background = Point::new(0., 0., 0.);
+    let mut tracer = Tracer::new(
+        400,
+        (400. / aspect_ratio) as usize,
+        camera,
+        400,
+        50,
+        background,
+    );
+    tracer.render(&world);
+    tracer
+}
+
+#[allow(dead_code)]
+pub fn cornell_box() -> Tracer {
+    let mut body_list: Vec<Box<dyn Body>> = vec![];
+    // left wall
+    body_list.push(Box::new(Rect::new(
+        0.,
+        555.,
+        0.,
+        555.,
+        555.,
+        Axis::YZ,
+        BodyProps::matte(Texture::SolidColor(Point::new(0.12, 0.45, 0.15))),
+    )));
+    // right wall
+    body_list.push(Box::new(Rect::new(
+        0.,
+        555.,
+        0.,
+        555.,
+        0.,
+        Axis::YZ,
+        BodyProps::matte(Texture::SolidColor(Point::new(0.65, 0.05, 0.05))),
+    )));
+    // back wall
+    body_list.push(Box::new(Rect::new(
+        0.,
+        555.,
+        0.,
+        555.,
+        555.,
+        Axis::XY,
+        BodyProps::matte(Texture::SolidColor(Point::new(0.73, 0.73, 0.73))),
+    )));
+    //floor
+    body_list.push(Box::new(Rect::new(
+        0.,
+        555.,
+        0.,
+        555.,
+        0.,
+        Axis::XZ,
+        BodyProps::matte(Texture::SolidColor(Point::new(0.73, 0.73, 0.73))),
+    )));
+    //roof
+    body_list.push(Box::new(Rect::new(
+        213.,
+        343.,
+        277.,
+        332.,
+        554.,
+        Axis::XZ,
+        BodyProps::light(Texture::SolidColor(Point::new(15., 15., 15.))),
+    )));
+    //light
+    body_list.push(Box::new(Rect::new(
+        0.,
+        555.,
+        0.,
+        555.,
+        555.,
+        Axis::XZ,
+        BodyProps::matte(Texture::SolidColor(Point::new(0.73, 0.73, 0.73))),
+    )));
+    let look_from = Point::new(278., 278., -800.);
+    let look_at = Point::new(278., 278., 0.);
+    let camera = Camera::new(
+        look_from,
+        look_at,
+        Point::new(0., 1., 0.),
+        40.,
+        1.0,
+        0.1,
+        10.,
+    );
+
+    let world = BVH::new(body_list);
+    let background = Point::new(0.0, 0.0, 0.0);
+    let mut tracer = Tracer::new(600, 600, camera, 200, 50, background);
     tracer.render(&world);
     tracer
 }
@@ -190,7 +309,8 @@ pub fn book_cover() -> Tracer {
     );
 
     let world = BVH::new(body_list);
-    let mut tracer = Tracer::new(image_width, image_height, camera, 500, 50);
+    let background = Point::new(0.7, 0.8, 1.);
+    let mut tracer = Tracer::new(image_width, image_height, camera, 500, 50, background);
     tracer.render(&world);
     tracer
 }
@@ -285,7 +405,8 @@ pub fn phone_wallpaper() -> Tracer {
     );
 
     let world = BVH::new(body_list);
-    let mut tracer = Tracer::new(image_width, image_height, camera, 500, 50);
+    let background = Point::new(0.7, 0.8, 1.);
+    let mut tracer = Tracer::new(image_width, image_height, camera, 500, 50, background);
     tracer.render(&world);
     tracer
 }
