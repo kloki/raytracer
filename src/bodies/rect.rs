@@ -13,6 +13,7 @@ pub struct Rect {
     body_props: BodyProps,
 }
 
+#[derive(Debug)]
 pub enum Axis {
     XY,
     XZ,
