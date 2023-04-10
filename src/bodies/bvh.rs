@@ -1,7 +1,8 @@
 use crate::bodies::collision::{Body, HitRecord, AABB};
-
+use crate::ordered_float::OrderedFloat;
 use crate::point::Point;
 use crate::raytracer::Ray;
+use rand::Rng;
 pub struct BVH {
     left: Box<dyn Body>,
     right: Box<dyn Body>,
@@ -25,6 +26,16 @@ impl BVH {
                 aabb,
             },
             _ => {
+                let mut rng = rand::thread_rng();
+                let axis = rng.gen_range(0..3);
+                if axis == 0 {
+                    bodies.sort_unstable_by_key(|b| OrderedFloat(b.bounding_box().min.x));
+                } else if axis == 1 {
+                    bodies.sort_unstable_by_key(|b| OrderedFloat(b.bounding_box().min.y));
+                } else {
+                    bodies.sort_unstable_by_key(|b| OrderedFloat(b.bounding_box().min.z));
+                }
+
                 let left = bodies.drain(0..(length / 2)).collect();
                 BVH {
                     left: Box::new(BVH::new(left)),

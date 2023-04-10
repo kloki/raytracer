@@ -3,8 +3,8 @@ use crate::point::Point;
 use crate::raytracer::Ray;
 #[derive(Clone, Copy)]
 pub struct AABB {
-    min: Point,
-    max: Point,
+    pub min: Point,
+    pub max: Point,
 }
 impl AABB {
     pub fn new(min: Point, max: Point) -> Self {
