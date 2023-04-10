@@ -65,6 +65,8 @@ impl Body for Rect {
             return false;
         }
         rec.t = t;
+        rec.u = (a - self.a0) / (self.a1 - self.a0);
+        rec.v = (b - self.b0) / (self.b1 - self.b0);
         rec.set_face_normal(ray, Point::new(0., 0., 1.));
         rec.p = ray.at(t);
         rec.body_props = self.body_props;

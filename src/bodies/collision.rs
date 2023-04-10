@@ -60,6 +60,8 @@ pub struct HitRecord {
     pub body_props: BodyProps,
     pub front_face: bool,
     pub t: f64,
+    pub u: f64,
+    pub v: f64,
 }
 
 impl HitRecord {
@@ -70,6 +72,8 @@ impl HitRecord {
             body_props: BodyProps::null(),
             front_face: true,
             t: 0.,
+            u: 0.,
+            v: 0.,
         }
     }
 

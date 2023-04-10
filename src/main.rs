@@ -6,7 +6,7 @@ mod point;
 mod raytracer;
 mod scenes;
 fn main() -> std::io::Result<()> {
-    let tracer = scenes::book_cover();
+    let tracer = scenes::two_spheres();
     let mut file = File::create("output.ppm")?;
     file.write_all(&tracer.image().as_bytes().to_vec())?;
     Ok(())

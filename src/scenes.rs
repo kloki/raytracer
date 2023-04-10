@@ -1,4 +1,4 @@
-use crate::bodies::{Body, BodyProps, Cube, Sphere, BVH};
+use crate::bodies::{Body, BodyProps, Cube, Sphere, Texture, BVH};
 use crate::point::Point;
 use crate::raytracer::{Camera, Tracer};
 use rand::Rng;
@@ -7,20 +7,20 @@ pub fn three_balls() -> Tracer {
     let floor = Sphere::new(
         Point::new(0., -100.5, -1.),
         100.0,
-        BodyProps::matte(Point::new(0.8, 0.8, 0.)),
+        BodyProps::matte(Texture::new_color(0.8, 0.8, 0.)),
     );
 
     let ball_1 = Sphere::new(
         Point::new(0., 0., -1.),
         0.5,
-        BodyProps::matte(Point::new(0.1, 0.2, 0.5)),
+        BodyProps::matte(Texture::new_color(0.1, 0.2, 0.5)),
     );
     let ball_2 = Sphere::new(Point::new(-1., 0., -1.), 0.5, BodyProps::glass(1.5));
 
     let ball_3 = Sphere::new(
         Point::new(1., 0., -1.),
         0.5,
-        BodyProps::metal(Point::new(0.8, 0.6, 0.2), 0.),
+        BodyProps::metal(Texture::new_color(0.8, 0.6, 0.2), 0.),
     );
     let aspect_ratio = 16. / 9.;
     let look_from = Point::new(1., 1., 5.);
@@ -50,22 +50,22 @@ pub fn square() -> Tracer {
     body_list.push(Box::new(Sphere::new(
         Point::new(0., -100.5, -1.),
         100.0,
-        BodyProps::matte(Point::new(0.2, 0.2, 0.2)),
+        BodyProps::matte(Texture::new_color(0.2, 0.2, 0.2)),
     )));
     body_list.push(Box::new(Cube::new(
         Point::new(-1.5, 0., 0.),
         Point::new(-0.5, 1., 1.),
-        BodyProps::matte(Point::new(0.8, 0.2, 0.2)),
+        BodyProps::matte(Texture::new_color(0.8, 0.2, 0.2)),
     )));
     body_list.push(Box::new(Cube::new(
         Point::new(0., 0., 0.),
         Point::new(1., 1., 1.),
-        BodyProps::metal(Point::new(0.7, 0.7, 0.7), 0.0),
+        BodyProps::metal(Texture::new_color(0.7, 0.7, 0.7), 0.0),
     )));
     body_list.push(Box::new(Cube::new(
         Point::new(1.5, 0., 0.),
         Point::new(2.5, 1., 1.),
-        BodyProps::matte(Point::new(0.5, 0.7, 0.2)),
+        BodyProps::matte(Texture::new_color(0.5, 0.7, 0.2)),
     )));
     let aspect_ratio = 16. / 9.;
     let look_from = Point::new(4., 3., 5.);
@@ -87,12 +87,50 @@ pub fn square() -> Tracer {
 }
 
 #[allow(dead_code)]
+pub fn two_spheres() -> Tracer {
+    let mut body_list: Vec<Box<dyn Body>> = vec![];
+    body_list.push(Box::new(Sphere::new(
+        Point::new(0., -10., 0.),
+        10.,
+        BodyProps::matte(Texture::Checkered(
+            Point::new(0.2, 0.3, 0.1),
+            Point::new(0.9, 0.9, 0.9),
+        )),
+    )));
+    body_list.push(Box::new(Sphere::new(
+        Point::new(0., 10., 0.),
+        10.,
+        BodyProps::matte(Texture::Checkered(
+            Point::new(0.2, 0.1, 0.3),
+            Point::new(0.9, 0.9, 0.9),
+        )),
+    )));
+
+    let aspect_ratio = 16. / 9.;
+    let look_from = Point::new(13., 2., 3.);
+    let look_at = Point::new(0., 0., 0.);
+    let camera = Camera::new(
+        look_from,
+        look_at,
+        Point::new(0., 1., 0.),
+        20.,
+        aspect_ratio,
+        0.1,
+        10.,
+    );
+
+    let world = BVH::new(body_list);
+    let mut tracer = Tracer::new(400, (400. / aspect_ratio) as usize, camera, 100, 50);
+    tracer.render(&world);
+    tracer
+}
+#[allow(dead_code)]
 pub fn book_cover() -> Tracer {
     let mut body_list: Vec<Box<dyn Body>> = vec![];
     body_list.push(Box::new(Sphere::new(
         Point::new(0., -1000., -1.),
         1000.0,
-        BodyProps::matte(Point::new(0.5, 0.5, 0.5)),
+        BodyProps::matte(Texture::new_color(0.5, 0.5, 0.5)),
     )));
 
     let mut rng = rand::thread_rng();
@@ -109,14 +147,14 @@ pub fn book_cover() -> Tracer {
                     body_list.push(Box::new(Sphere::new(
                         location,
                         0.2,
-                        BodyProps::matte(Point::random() * Point::random()),
+                        BodyProps::matte(Texture::random_color()),
                     )));
                 }
                 x if x < 0.95 => {
                     body_list.push(Box::new(Sphere::new(
                         location,
                         0.2,
-                        BodyProps::metal(Point::random(), rng.gen_range(0.5..1.)),
+                        BodyProps::metal(Texture::random_color(), rng.gen_range(0.5..1.)),
                     )));
                 }
                 _ => {
@@ -134,13 +172,13 @@ pub fn book_cover() -> Tracer {
     body_list.push(Box::new(Sphere::new(
         Point::new(-4., 1., 0.),
         1.,
-        BodyProps::matte(Point::new(0.8, 0.8, 0.)),
+        BodyProps::matte(Texture::new_color(0.8, 0.8, 0.)),
     )));
 
     body_list.push(Box::new(Sphere::new(
         Point::new(4., 1., 0.),
         1.,
-        BodyProps::metal(Point::new(0.7, 0.6, 0.5), 0.),
+        BodyProps::metal(Texture::new_color(0.7, 0.6, 0.5), 0.),
     )));
     let aspect_ratio = 3. / 2.;
     let image_width: usize = 600;
@@ -170,23 +208,23 @@ pub fn phone_wallpaper() -> Tracer {
     body_list.push(Box::new(Sphere::new(
         Point::new(0., -1000., 0.),
         1000.0,
-        BodyProps::metal(Point::new(0.7, 0.6, 0.5), 0.0),
+        BodyProps::metal(Texture::new_color(0.7, 0.6, 0.5), 0.0),
     )));
 
     body_list.push(Box::new(Sphere::new(
         Point::new(0., 1.8, 0.),
         1.8,
-        BodyProps::metal(Point::new(0.1, 0.2, 0.5), 0.3),
+        BodyProps::metal(Texture::new_color(0.1, 0.2, 0.5), 0.3),
     )));
     body_list.push(Box::new(Sphere::new(
         Point::new(1.5, 0.8, 5.),
         0.8,
-        BodyProps::matte(Point::new(0.7, 0.2, 0.5)),
+        BodyProps::matte(Texture::new_color(0.7, 0.2, 0.5)),
     )));
     body_list.push(Box::new(Sphere::new(
         Point::new(-2., 1.5, 4.),
         1.5,
-        BodyProps::metal(Point::new(0.8, 0.6, 0.2), 0.),
+        BodyProps::metal(Texture::new_color(0.8, 0.6, 0.2), 0.),
     )));
     body_list.push(Box::new(Sphere::new(
         Point::new(-2., 0.4, 5.8),
@@ -197,12 +235,12 @@ pub fn phone_wallpaper() -> Tracer {
     body_list.push(Box::new(Cube::new_as_sphere(
         Point::new(-2.3, 0.15, 6.3),
         0.15,
-        BodyProps::matte(Point::new(0.0, 0.1, 0.1)),
+        BodyProps::matte(Texture::new_color(0.0, 0.1, 0.1)),
     )));
     body_list.push(Box::new(Sphere::new(
         Point::new(2., 0.3, 5.9),
         0.3,
-        BodyProps::metal(Point::new(0.8, 0.8, 0.8), 0.),
+        BodyProps::metal(Texture::new_color(0.8, 0.8, 0.8), 0.),
     )));
     body_list.push(Box::new(Sphere::new(
         Point::new(1., 1.5, 3.),
@@ -212,23 +250,23 @@ pub fn phone_wallpaper() -> Tracer {
     body_list.push(Box::new(Cube::new_as_sphere(
         Point::new(0.6, 0.4, 6.),
         0.4,
-        BodyProps::matte(Point::new(0.3, 0.6, 0.4)),
+        BodyProps::matte(Texture::new_color(0.3, 0.6, 0.4)),
     )));
 
     body_list.push(Box::new(Sphere::new(
         Point::new(-1.1, 0.5, -12.1),
         0.6,
-        BodyProps::matte(Point::new(0.9, 0.2, 0.2)),
+        BodyProps::matte(Texture::new_color(0.9, 0.2, 0.2)),
     )));
     body_list.push(Box::new(Sphere::new(
         Point::new(-1.6, 0.4, -11.),
         0.5,
-        BodyProps::metal(Point::new(0.5, 0.8, 0.5), 0.2),
+        BodyProps::metal(Texture::new_color(0.5, 0.8, 0.5), 0.2),
     )));
     body_list.push(Box::new(Cube::new_as_sphere(
         Point::new(-0.8, 0.2, -11.0),
         0.3,
-        BodyProps::matte(Point::new(0.3, 0.2, 0.7)),
+        BodyProps::matte(Texture::new_color(0.3, 0.2, 0.7)),
     )));
 
     body_list.push(Box::new(Sphere::new(
