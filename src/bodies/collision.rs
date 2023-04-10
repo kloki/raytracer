@@ -1,15 +1,14 @@
 use crate::bodies::bodyprops::BodyProps;
 use crate::point::Point;
 use crate::raytracer::Ray;
-use std::iter::zip;
 #[derive(Clone, Copy)]
 pub struct AABB {
-    a: Point,
-    b: Point,
+    min: Point,
+    max: Point,
 }
 impl AABB {
-    pub fn new(a: Point, b: Point) -> Self {
-        AABB { a, b }
+    pub fn new(min: Point, max: Point) -> Self {
+        AABB { min, max }
     }
 
     pub fn from_bodies(bodies: &Vec<Box<dyn Body>>) -> Option<AABB> {
@@ -24,30 +23,30 @@ impl AABB {
     }
 
     pub fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> bool {
-        // let zipped = zip(
-        //     zip(self.a.as_array(), self.b.as_array()),
-        //     zip(ray.origin.as_array(), ray.direction.as_array()),
-        // );
-        // for ((a, b), (origin, direction)) in zipped {
-        //     let t0 = (a - origin / direction).min(b - origin / direction);
-        //     let t1 = (a - origin / direction).max(b - origin / direction);
-        //     if t1.min(t_max) <= t0.max(t_min) {
-        //         return false;
-        //     }
-        // }
+        let min = self.min.as_array();
+        let max = self.max.as_array();
+        let origin = ray.origin.as_array();
+        let direction = ray.direction.as_array();
+        for i in 0..3 {
+            let t0 = ((min[i] - origin[i]) / direction[i]).min((max[i] - origin[i]) / direction[i]);
+            let t1 = ((min[i] - origin[i]) / direction[i]).max((max[i] - origin[i]) / direction[i]);
+            if t1.min(t_max) <= t0.max(t_min) {
+                return false;
+            }
+        }
         true
     }
     pub fn surrounding_box(&self, other: AABB) -> AABB {
         Self::new(
             Point::new(
-                self.a.x.min(other.a.x),
-                self.a.y.min(other.a.y),
-                self.a.z.min(other.a.z),
+                self.min.x.min(other.min.x),
+                self.min.y.min(other.min.y),
+                self.min.z.min(other.min.z),
             ),
             Point::new(
-                self.b.x.max(other.b.x),
-                self.b.y.max(other.b.y),
-                self.b.z.max(other.b.z),
+                self.max.x.max(other.max.x),
+                self.max.y.max(other.max.y),
+                self.max.z.max(other.max.z),
             ),
         )
     }
